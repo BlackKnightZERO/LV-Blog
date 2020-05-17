@@ -2103,6 +2103,36 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
@@ -2110,8 +2140,20 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         tagName: ''
       },
       addModal: false,
+      editModal: false,
       isAdding: false,
-      tags: []
+      tags: [],
+      editData: {
+        id: '',
+        tagName: ''
+      },
+      editIndex: -1,
+      deleteModal: false,
+      deleteIndex: -1,
+      deleteData: {
+        id: '',
+        tagName: ''
+      }
     };
   },
   created: function created() {
@@ -2146,6 +2188,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     }))();
   },
   methods: {
+    //add Tag
     addTag: function addTag() {
       var _this2 = this;
 
@@ -2181,13 +2224,19 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
                   _this2.s('Tag has been added successfully!');
 
-                  _this2.closeModal();
+                  _this2.closeAddModal();
 
-                  _this2.clearTextField();
+                  _this2.clearAddTextField();
                 } else {
-                  _this2.btnloadingOff();
+                  if (res.status === 422) {
+                    if (res.data.errors.tagName) {
+                      _this2.i(res.data.errors.tagName[0]);
+                    }
+                  } else {
+                    _this2.btnloadingOff();
 
-                  _this2.e();
+                    _this2.e();
+                  }
                 }
 
               case 8:
@@ -2198,7 +2247,126 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         }, _callee2);
       }))();
     },
-    closeModal: function closeModal() {
+    //update Tag
+    updateTag: function updateTag() {
+      var _this3 = this;
+
+      return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee3() {
+        var res;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee3$(_context3) {
+          while (1) {
+            switch (_context3.prev = _context3.next) {
+              case 0:
+                _this3.btnloading();
+
+                if (!(_this3.editData.tagName.trim() == '')) {
+                  _context3.next = 4;
+                  break;
+                }
+
+                _this3.btnloadingOff();
+
+                return _context3.abrupt("return", _this3.e('Tagname is required!'));
+
+              case 4:
+                _context3.next = 6;
+                return _this3.callApi('post', '/app/update_tag', _this3.editData);
+
+              case 6:
+                res = _context3.sent;
+
+                if (res.status === 200) {
+                  _this3.tags[_this3.editIndex].tagName = _this3.editData.tagName;
+
+                  _this3.btnloadingOff();
+
+                  _this3.s('Tag has been edited successfully!');
+
+                  _this3.closeEditModal();
+
+                  _this3.clearEditTextField();
+                } else {
+                  if (res.status === 422) {
+                    if (res.data.errors.tagName) {
+                      _this3.i(res.data.errors.tagName[0]);
+                    }
+                  } else {
+                    _this3.btnloadingOff();
+
+                    _this3.e();
+                  }
+                }
+
+              case 8:
+              case "end":
+                return _context3.stop();
+            }
+          }
+        }, _callee3);
+      }))();
+    },
+    // delete Tag
+    deleteTag: function deleteTag() {
+      var _this4 = this;
+
+      return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee4() {
+        var res;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee4$(_context4) {
+          while (1) {
+            switch (_context4.prev = _context4.next) {
+              case 0:
+                _this4.btnloading();
+
+                _context4.next = 3;
+                return _this4.callApi('post', '/app/delete_tag', _this4.deleteData);
+
+              case 3:
+                res = _context4.sent;
+
+                if (res.status === 200) {
+                  _this4.tags.splice(_this4.deleteIndex, 1);
+
+                  _this4.s('Tag has been deleted successfully!');
+
+                  _this4.btnloadingOff();
+
+                  _this4.closeDeleteModal();
+                } else {
+                  _this4.btnloadingOff();
+
+                  _this4.closeDeleteModal();
+
+                  _this4.e();
+                }
+
+              case 5:
+              case "end":
+                return _context4.stop();
+            }
+          }
+        }, _callee4);
+      }))();
+    },
+    // async deleteTag(){
+    // 	if(!confirm('Are You Sure About Deleting This Tag?')){
+    // 	} else {
+    // 		this.$set(tag, 'isDeleting', true);
+    // 		const res = await this.callApi('post', '/app/delete_tag',tag);
+    // 		if(res.status===200){
+    // 			this.tags.splice(index,1);
+    // 			this.s('Tag has been deleted successfully!');
+    // 			this.$set(tag, 'isDeleting', false);
+    // 		} else {
+    // 		this.$set(tag, 'isDeleting', false);
+    // 		this.e();
+    // 		}
+    // 	}
+    // },
+    //others
+    openAddModal: function openAddModal() {
+      this.addModal = true;
+    },
+    closeAddModal: function closeAddModal() {
       this.addModal = false;
     },
     btnloading: function btnloading() {
@@ -2207,8 +2375,35 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     btnloadingOff: function btnloadingOff() {
       this.isAdding = false;
     },
-    clearTextField: function clearTextField() {
+    clearAddTextField: function clearAddTextField() {
       this.data.tagName = '';
+    },
+    clearEditTextField: function clearEditTextField() {
+      this.editData.tagName = '';
+    },
+    openEditModal: function openEditModal(tag, index) {
+      this.editModal = true;
+      this.editData.id = tag.id;
+      this.editData.tagName = tag.tagName;
+      this.editIndex = index;
+    },
+    closeEditModal: function closeEditModal() {
+      this.editData.id = '';
+      this.editData.tagName = '';
+      this.editModal = false;
+      this.editIndex = -1;
+    },
+    openDeleteModal: function openDeleteModal(tag, index) {
+      this.deleteIndex = index;
+      this.deleteData.id = tag.id;
+      this.deleteData.tagName = tag.tagName;
+      this.deleteModal = true;
+    },
+    closeDeleteModal: function closeDeleteModal() {
+      this.deleteIndex = -1;
+      this.deleteData.id = '';
+      this.deleteData.tagName = '';
+      this.deleteModal = false;
     }
   }
 });
@@ -67520,13 +67715,7 @@ var render = function() {
                   _vm._v("Tags "),
                   _c(
                     "Button",
-                    {
-                      on: {
-                        click: function($event) {
-                          _vm.addModal = true
-                        }
-                      }
-                    },
+                    { on: { click: _vm.openAddModal } },
                     [_c("Icon", { attrs: { type: "md-add" } }), _vm._v(" Add")],
                     1
                   )
@@ -67556,13 +67745,27 @@ var render = function() {
                           [
                             _c(
                               "Button",
-                              { attrs: { type: "info", size: "small" } },
+                              {
+                                attrs: { type: "info", size: "small" },
+                                on: {
+                                  click: function($event) {
+                                    return _vm.openEditModal(tag, index)
+                                  }
+                                }
+                              },
                               [_vm._v("Edit")]
                             ),
                             _vm._v(" "),
                             _c(
                               "Button",
-                              { attrs: { type: "error", size: "small" } },
+                              {
+                                attrs: { type: "error", size: "small" },
+                                on: {
+                                  click: function($event) {
+                                    return _vm.openDeleteModal(tag, index)
+                                  }
+                                }
+                              },
                               [_vm._v("Delete")]
                             )
                           ],
@@ -67618,7 +67821,7 @@ var render = function() {
                     "Button",
                     {
                       attrs: { type: "default" },
-                      on: { click: _vm.closeModal }
+                      on: { click: _vm.closeAddModal }
                     },
                     [_vm._v("close")]
                   ),
@@ -67640,6 +67843,127 @@ var render = function() {
               )
             ],
             1
+          ),
+          _vm._v(" "),
+          _c(
+            "Modal",
+            {
+              attrs: {
+                title: "Edit Tag",
+                "mask-closable": false,
+                closable: false
+              },
+              model: {
+                value: _vm.editModal,
+                callback: function($$v) {
+                  _vm.editModal = $$v
+                },
+                expression: "editModal"
+              }
+            },
+            [
+              _c("Input", {
+                staticStyle: { width: "100%" },
+                attrs: {
+                  prefix: "ios-link",
+                  clearable: "",
+                  placeholder: "Tag Name"
+                },
+                model: {
+                  value: _vm.editData.tagName,
+                  callback: function($$v) {
+                    _vm.$set(_vm.editData, "tagName", $$v)
+                  },
+                  expression: "editData.tagName"
+                }
+              }),
+              _vm._v(" "),
+              _c(
+                "div",
+                { attrs: { slot: "footer" }, slot: "footer" },
+                [
+                  _c(
+                    "Button",
+                    {
+                      attrs: { type: "default" },
+                      on: { click: _vm.closeEditModal }
+                    },
+                    [_vm._v("close")]
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "Button",
+                    {
+                      attrs: {
+                        type: "primary",
+                        disabled: _vm.isAdding,
+                        loading: _vm.isAdding
+                      },
+                      on: { click: _vm.updateTag }
+                    },
+                    [_vm._v(_vm._s(_vm.isAdding ? "Updating.." : "Update"))]
+                  )
+                ],
+                1
+              )
+            ],
+            1
+          ),
+          _vm._v(" "),
+          _c(
+            "Modal",
+            {
+              attrs: { width: "360" },
+              model: {
+                value: _vm.deleteModal,
+                callback: function($$v) {
+                  _vm.deleteModal = $$v
+                },
+                expression: "deleteModal"
+              }
+            },
+            [
+              _c(
+                "p",
+                {
+                  staticStyle: { color: "#f60", "text-align": "center" },
+                  attrs: { slot: "header" },
+                  slot: "header"
+                },
+                [
+                  _c("Icon", { attrs: { type: "ios-information-circle" } }),
+                  _vm._v(" "),
+                  _c("span", [_vm._v("Delete confirmation")])
+                ],
+                1
+              ),
+              _vm._v(" "),
+              _c("div", { staticStyle: { "text-align": "center" } }, [
+                _c("p", [_vm._v("Are you sure you delete it?")])
+              ]),
+              _vm._v(" "),
+              _c(
+                "div",
+                { attrs: { slot: "footer" }, slot: "footer" },
+                [
+                  _c(
+                    "Button",
+                    {
+                      attrs: {
+                        type: "error",
+                        size: "large",
+                        long: "",
+                        loading: _vm.isAdding,
+                        disabled: _vm.isAdding
+                      },
+                      on: { click: _vm.deleteTag }
+                    },
+                    [_vm._v("Delete")]
+                  )
+                ],
+                1
+              )
+            ]
           )
         ],
         1

@@ -14,6 +14,8 @@
 
 Route::get('app/get_tags', 'AdminControler@getTags');
 Route::post('app/create_tag', 'AdminControler@addTag');
+Route::post('app/update_tag', 'AdminControler@updateTag');
+Route::post('app/delete_tag', 'AdminControler@deleteTag');
 
 Route::get('/', function () {
     return view('welcome');
