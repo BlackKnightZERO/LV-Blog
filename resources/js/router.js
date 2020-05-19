@@ -6,8 +6,10 @@ import secondPage from './components/pages/secondPage'
 import hooks from './components/pages/basic/hooks'
 import methods from './components/pages/basic/methods'
 
-import dashboard from './components/pages/dashboard'
-import tags from './components/tags'
+//admin imports
+import dashboard from './admin/pages/dashboard'
+import tags from './admin/pages/tags'
+import category from './admin/pages/category'
 
 Vue.use(Router)
 
@@ -20,6 +22,10 @@ const routes = [
 	{
 		path: '/tags',
       	component: tags,
+	},
+	{
+		path: '/category',
+      	component: category,
 	},
 
 

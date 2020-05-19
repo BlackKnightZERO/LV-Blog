@@ -75,7 +75,7 @@
 							<span>Delete confirmation</span>
 						</p>
 						<div style="text-align:center">
-							<p>Are you sure you delete it?</p>
+							<p>Are you sure you want to delete it?</p>
 						</div>
 						<div slot="footer">
 							<Button type="error" size="large" long :loading="isAdding" :disabled="isAdding" @click="deleteTag">Delete</Button>

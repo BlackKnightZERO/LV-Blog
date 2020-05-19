@@ -5,6 +5,14 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>LV-BLOG</title>
         <link rel="stylesheet" href="/css/app.css">
+
+        <script>
+        (function () {
+            window.Laravel = {
+                csrfToken: '{{ csrf_token() }}'
+            };
+        })();
+        </script>
     </head>
     <body>
         <div id="app">
