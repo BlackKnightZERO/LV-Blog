@@ -13,6 +13,7 @@
 							<tr>
 								<th>ID</th>
 								<th>Category Name</th>
+								<th>Image</th>
 								<th>Created At</th>
 								<th>Action</th>
 							</tr>
@@ -21,7 +22,10 @@
 							
 							<tr v-for="(category, index) in categories" :key="index">
 								<td>{{ index+1 }}</td>
-								<td class="_table_name">{{ category.categoryName }}</td>
+								<td class="table_name_new">{{ category.categoryName }}</td>
+								<td width="200px">
+									<img :src="`/Admin/category/${ category.iconImage }`" style="width: 28%;"/> 
+								</td>
 								<td>{{ category.created_at }}</td>
 								<td>
 									<Button type="info" size="small" @click="openEditModal(category, index)">Edit</Button>
@@ -34,7 +38,7 @@
 					</div>
 				</div>
 				 <!-- <Page :total="100" /> -->
-				 <!-- Category adding midal -->
+				 <!-- Category adding modal -->
 				  	<Modal
 						v-model="addModal"
 						title="Add a Category"
@@ -44,7 +48,6 @@
 						<Input prefix="ios-link" clearable v-model="data.categoryName" placeholder="Category Name" style="width: 100%" />
                         <br>
                         <br>
-                        <!-- <div class="space"></div> -->
                         <Upload
 							ref="uploads"
                             type="drag"
@@ -56,7 +59,7 @@
 							:on-format-error="handleFormatError"
 							:on-exceeded-size="handleMaxSize"
 							:on-remove="removeImage"
-                            action="/app/category/image_upload">
+                            action="/admin/category/image_upload">
                             <div style="padding: 20px 0">
                                 <Icon type="ios-cloud-upload" size="32" style="color: #3399ff"></Icon>
                                 <p>Click or drag files here to upload</p>
@@ -74,8 +77,8 @@
 						</div>
 
 					</Modal>	
-				 <!-- Category adding midal -->	
-				  <!-- Category edit midal -->
+				 <!-- Category adding modal -->	
+				  <!-- Category edit modal -->
 				  	<Modal
 						v-model="editModal"
 						title="Edit Category"
@@ -83,13 +86,39 @@
 						:closable="false"
 						>
 						<Input prefix="ios-link" clearable v-model="editData.categoryName" placeholder="Category Name" style="width: 100%" />
+						
+						<br><br>
+						<div v-if="!div" style="float : right;">
+							<Upload
+							ref="editRef"
+							:headers="{'x-csrf-token': token, 'X-Requested-With': 'XMLHttpRequest'}"
+							:on-success="handleEditSuccess"
+							:on-error="handleEditError"
+							:format="['jpg','jpeg','png']"
+							:max-size="4096"
+							:on-format-error="handleFormatError"
+							:on-exceeded-size="handleMaxSize"
+							:on-remove="removeEditImage"
+							action="/admin/category/image_upload"
+							>
+								<Button size="small" icon="md-sync" shape="circle" @click="tempOldIconImage(editData.iconImage)"></Button>
+							</Upload>
+						</div>
+						<div v-else style="float : right;">
+							<Button size="small" icon="ios-close" shape="circle" @click.native="removeEditImage"></Button>
+						</div>
+						
+						<div class="image_thumb" v-if="editData.iconImage">
+							<img :src="`/Admin/category/${editData.iconImage}`" style="width:50%; height:50%; display:block; margin:auto;" />
+						</div>
+						
 						<div slot="footer">
-							<Button type="default" @click="closeEditModal">close</Button>
+							<Button type="default" @click="closeEditModal" :disabled="editData.oldIconImage!=''">close</Button>
 							<Button type="primary" @click="updateCategory" :disabled="isAdding" :loading="isAdding">{{ isAdding ? 'Updating..' : 'Update'}}</Button>
 						</div>
 
 					</Modal>	
-				 <!-- Category edit midal -->	
+				 <!-- Category edit modal -->	
 				 <!-- delete modal -->
 					<Modal v-model="deleteModal" width="360">
 						<p slot="header" style="color:#f60;text-align:center">
@@ -109,7 +138,20 @@
 		</div>
 	</div>
 </template>
-
+<style scoped>
+	.table_name_new{
+		font-weight: 600;
+		color: #383737;
+		max-width: 415px;
+		/* display: -webkit-box; */
+		max-height: 3.2rem;
+		-webkit-box-orient: vertical;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: normal;
+		-webkit-line-clamp: 2;
+	}
+</style>
 <script>
 export default {
 	data(){
@@ -125,6 +167,7 @@ export default {
 			editData: {
 				id:'',
 				iconImage:'',
+				oldIconImage:'',
 				categoryName:'',
 			},
             editIndex:-1,
@@ -139,20 +182,19 @@ export default {
 			// 	iconImage:'',
 			// },
 
-            token:'',
+			token:'',
+			div:false,
 		}	
 	},
 
 	async created(){
         this.token = window.Laravel.csrfToken; //get csrf token from window.laravel object defined at welcome blade page
 
-		const res = await this.callApi('get','/app/get_tags');
-		console.log('running');
+		const res = await this.callApi('get','admin/category/get_category');
 		
 		if(res.status==200){
 			this.categories = res.data
 		} else {
-			console.log('running-> ');
 			this.e();
 		}
 	},
@@ -166,12 +208,12 @@ export default {
 				this.btnloadingOff();
 				return this.i('Category name is required!');
 			} 
-			const res = await this.callApi('post','/app/category/create_category',this.data);
+			const res = await this.callApi('post','/admin/category/create_category',this.data);
 			if(res.status===201){
 				this.categories.unshift(res.data); //adds response to the begining of tags array
 				this.btnloadingOff();
 				this.s('Category has been added successfully!');
-				this.closeAddModal();
+				this.closeSuccAddModal();
 				this.clearUploadFields();
 			} else {
 				if(res.status===422){
@@ -196,10 +238,13 @@ export default {
 				this.btnloadingOff();
 				return this.e('Category name is required!');
 			} 
-			const res = await this.callApi('post','/app/update_tag',this.editData);
+			const res = await this.callApi('post','/admin/category/update_category',this.editData);
 			if(res.status===200){
+				this.removeEditOldImage(this.editData.oldIconImage);
 				this.categories[this.editIndex].categoryName = this.editData.categoryName;
+				this.categories[this.editIndex].iconImage = this.editData.iconImage;
 				this.btnloadingOff();
+				this.toggleButton();
 				this.s('Category has been edited successfully!');
 				this.closeEditModal();
 				this.clearEditTextField();
@@ -247,11 +292,37 @@ export default {
 			let image = this.data.iconImage;
 			this.data.iconImage = '';
 			this.$refs.uploads.clearFiles();
-			const res = await this.callApi('post','/app/category/remove_image',{"iconImage": image});
+			const res = await this.callApi('post','/admin/category/remove_image',{"iconImage": image});
 			if(res.status===200){
-				console.log('successfully deleted pic')
+				console.log('successfully deleted pic');
 			} else {
 				this.data.iconImage = image;
+			}
+		},
+
+		async removeEditImage(){
+			
+			let image = this.editData.iconImage;
+			this.editData.iconImage = this.editData.oldIconImage;
+			// this.$refs.editRef.clearFiles(); //commented because div not rendering
+			const res = await this.callApi('post','/admin/category/remove_image',{"iconImage": image});
+			if(res.status===200){
+				this.toggleButton();
+				this.clearOldIconImage();
+				console.log('successfully deleted pic');
+			} else {
+				this.data.iconImage = image;
+			}
+		},
+
+		async removeEditOldImage(img){
+			let image = img;
+			this.editData.oldIconImage ='';
+			const res = await this.callApi('post','/admin/category/remove_image',{"iconImage": image});
+			if(res.status===200){
+				console.log('successfully deleted pic');
+			} else {
+				console.log('operation failed-> delete old pic from db');
 			}
 		},
 
@@ -277,6 +348,16 @@ export default {
 				desc: 'File  ' + file.name + ' is too large, no more than 2M.'
 			});
 		},
+		handleEditSuccess(res, file){
+			this.toggleButton();
+			this.editData.iconImage = res;
+		},
+		handleEditError(){
+			this.$Notice.warning({
+				title: 'The file format is incorrect',
+				desc: `${file.errors.file.length ? file.errors.file[0] : 'Something Went Wrong!'}`,
+			});
+		},
 
 		//others
 		openAddModal(){
@@ -294,6 +375,11 @@ export default {
 			this.clearUploadFields();
 			this.addModal = false;
 		},
+		closeSuccAddModal(){
+			this.data.iconImage = '';
+			this.data.categoryName = '';
+			this.addModal = false ;
+		},
 		btnloading(){
 			this.isAdding=true;
 		},
@@ -307,17 +393,24 @@ export default {
 			this.data.categoryName = '';
 		},
 		clearEditTextField(){
-			this.editData.categoryName='';
+			this.editData.id='';
+			this.editData.categoryName = '';
+			this.editData.iconImage = '';
 		},
-		openEditModal(category, index){	
+		openEditModal(category, index){
+			if(category.iconImage==''){
+				category.iconImage='imageData';
+			}	
 			this.editModal=true;
 			this.editData.id = category.id;
+			this.editData.iconImage = category.iconImage;
 			this.editData.categoryName = category.categoryName;
 			this.editIndex = index;
 		},
 		closeEditModal(){
-			this.editData.id = '';
+			this.editData.id='';
 			this.editData.categoryName = '';
+			this.editData.iconImage = '';
 			this.editModal = false;
 			this.editIndex = -1;
 		},
@@ -332,6 +425,15 @@ export default {
 			this.deleteData.id = '';
 			this.deleteData.categoryName = '';
 			this.deleteModal = false;
+		},
+		tempOldIconImage(img){
+			this.editData.oldIconImage = img;
+		},
+		clearOldIconImage(){
+			this.editData.oldIconImage='';
+		},
+		toggleButton(){
+			this.div = !this.div;
 		},
 		
 	},

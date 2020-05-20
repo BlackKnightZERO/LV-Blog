@@ -115,12 +115,11 @@ export default {
 	},
 
 	async created(){
-		const res = await this.callApi('get','/app/get_tags');
+		const res = await this.callApi('get','/admin/tag/get_tags');
 		
 		if(res.status==200){
 			this.tags = res.data
 		} else {
-			console.log('running-> ');
 			this.e();
 		}
 	},
@@ -134,7 +133,7 @@ export default {
 				this.btnloadingOff();
 				return this.e('Tagname is required!');
 			} 
-			const res = await this.callApi('post','/app/create_tag',this.data);
+			const res = await this.callApi('post','/admin/tag/create_tag',this.data);
 			if(res.status===201){
 				this.tags.unshift(res.data); //adds response to the begining of tags array
 				this.btnloadingOff();
@@ -160,7 +159,7 @@ export default {
 				this.btnloadingOff();
 				return this.e('Tagname is required!');
 			} 
-			const res = await this.callApi('post','/app/update_tag',this.editData);
+			const res = await this.callApi('post','/admin/tag/update_tag',this.editData);
 			if(res.status===200){
 				this.tags[this.editIndex].tagName = this.editData.tagName;
 				this.btnloadingOff();
@@ -181,7 +180,7 @@ export default {
 		// delete Tag
 		async deleteTag(){
 				this.btnloading();
-				const res = await this.callApi('post', '/app/delete_tag',this.deleteData);
+				const res = await this.callApi('post', '/admin/tag/delete_tag',this.deleteData);
 				if(res.status===200){
 					this.tags.splice(this.deleteIndex,1);
 					this.s('Tag has been deleted successfully!');
