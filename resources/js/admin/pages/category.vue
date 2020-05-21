@@ -176,6 +176,7 @@ export default {
 			deleteData:{
 				id:'',
 				categoryName:'',
+				iconImage:'',
 			},
 			//image remove v1
 			// deleteImage:{
@@ -262,9 +263,9 @@ export default {
 		// delete Category
 		async deleteCategory(){
 				this.btnloading();
-				const res = await this.callApi('post', '/app/delete_tag',this.deleteData);
+				const res = await this.callApi('post', '/admin/category/delete_category',this.deleteData);
 				if(res.status===200){
-					this.category.splice(this.deleteIndex,1);
+					this.categories.splice(this.deleteIndex,1);
 					this.s('Category has been deleted successfully!');
 					this.btnloadingOff();
 					this.closeDeleteModal();
@@ -418,12 +419,14 @@ export default {
 			this.deleteIndex = index;
 			this.deleteData.id = category.id;
 			this.deleteData.categoryName = category.categoryName;
+			this.deleteData.iconImage = category.iconImage;
 			this.deleteModal = true;
 		},
 		closeDeleteModal(){
 			this.deleteIndex = -1;
 			this.deleteData.id = '';
 			this.deleteData.categoryName = '';
+			this.deleteData.iconImage = '';
 			this.deleteModal = false;
 		},
 		tempOldIconImage(img){

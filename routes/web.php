@@ -35,6 +35,7 @@ Route::prefix('admin')->namespace('Admin')->group(function () {
     Route::post('/category/remove_image', 'CategoryController@imageRemove');
     Route::post('/category/create_category', 'CategoryController@add');
     Route::post('/category/update_category', 'CategoryController@update');
+    Route::post('/category/delete_category', 'CategoryController@delete');
 });
 
 

@@ -2104,7 +2104,8 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       deleteIndex: -1,
       deleteData: {
         id: '',
-        categoryName: ''
+        categoryName: '',
+        iconImage: ''
       },
       //image remove v1
       // deleteImage:{
@@ -2287,13 +2288,13 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 _this4.btnloading();
 
                 _context4.next = 3;
-                return _this4.callApi('post', '/app/delete_tag', _this4.deleteData);
+                return _this4.callApi('post', '/admin/category/delete_category', _this4.deleteData);
 
               case 3:
                 res = _context4.sent;
 
                 if (res.status === 200) {
-                  _this4.category.splice(_this4.deleteIndex, 1);
+                  _this4.categories.splice(_this4.deleteIndex, 1);
 
                   _this4.s('Category has been deleted successfully!');
 
@@ -2526,12 +2527,14 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       this.deleteIndex = index;
       this.deleteData.id = category.id;
       this.deleteData.categoryName = category.categoryName;
+      this.deleteData.iconImage = category.iconImage;
       this.deleteModal = true;
     },
     closeDeleteModal: function closeDeleteModal() {
       this.deleteIndex = -1;
       this.deleteData.id = '';
       this.deleteData.categoryName = '';
+      this.deleteData.iconImage = '';
       this.deleteModal = false;
     },
     tempOldIconImage: function tempOldIconImage(img) {

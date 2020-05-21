@@ -54,4 +54,16 @@ class CategoryController extends Controller
         return Category::where('id', $request->id)->update(['categoryName' => $request->categoryName,
                                                             'iconImage'=>$request->iconImage]);
     }
+
+    public function delete(Request $request){
+        $this->validate($request,[
+            'categoryName' => 'required',
+            'id'=>'required',
+        ]);
+        if($request->iconImage){
+            if(file_exists(public_path('/Admin/category/'.$request->iconImage))){
+                unlink(public_path('/Admin/category/'.$request->iconImage)); }
+        }
+        return Category::destroy($request->id);
+    }
 }
