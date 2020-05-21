@@ -6,6 +6,8 @@ import secondPage from './components/pages/secondPage'
 import hooks from './components/pages/basic/hooks'
 import methods from './components/pages/basic/methods'
 
+import useComponents from './vuex/useComponents'
+
 //admin imports
 import dashboard from './admin/pages/dashboard'
 import tags from './admin/pages/tags'
@@ -27,6 +29,7 @@ const routes = [
 		path: '/category',
       	component: category,
 	},
+	
 
 
 
@@ -79,6 +82,11 @@ const routes = [
 	{
 		path:'/methods',
 		component:methods,
+	},
+	//vuex-test
+	{
+		path:'/vuex-test',
+		component:useComponents,
 	},
 
 ]

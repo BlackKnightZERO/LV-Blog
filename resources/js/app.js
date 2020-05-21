@@ -9,12 +9,13 @@ Vue.use(ViewUI);
 import common from './common';
 Vue.mixin(common);
 
-
+import store from './store';
 
 
 Vue.component('mainapp', require('./components/mainapp.vue').default)
 
 const app = new Vue({
 	el:'#app',
-	router
+	router,
+	store
 });
