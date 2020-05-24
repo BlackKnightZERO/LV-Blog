@@ -35,9 +35,16 @@ export default {
     components:{
         componentA,componentB,componentC,
     },
+    watch:{
+        counter(val){ //vuex-state-access
+            console.log(val);
+             this.runAmethodWhenCounterChange(); //run method from watch
+             console.log('local var->',this.localvar); //access local variable from watch
+        },
+    },
     data(){
         return{
-
+            localvar : 99,
         }
     },
     created(){     ///this is not getter
@@ -60,6 +67,9 @@ export default {
         },
         doubleO(){
             this.$store.commit('multiplyHundred');     //name, no-payload
+        },
+        runAmethodWhenCounterChange(){
+            console.log('running onchnage method');
         }
     }
 

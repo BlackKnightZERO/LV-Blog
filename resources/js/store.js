@@ -6,7 +6,17 @@ Vue.use(Vuex)
 export default new Vuex.Store({
 
     state:{
-        counter: 1000
+        counter: 1000,
+
+        deleteModalObj : {
+            showDeleteModal:false,
+            deleteUrl:'',
+            deleteIndex:-1,
+            isDeleted:false,
+            deleteData:{
+
+            },
+        }
     },
 
     getters:{
@@ -15,6 +25,10 @@ export default new Vuex.Store({
         },
         getCounterRatio(state){
             return state.counter / 100;
+        },
+
+        getDeleteModalObj(state){
+            return state.deleteModalObj;
         }
     },
 
@@ -29,6 +43,26 @@ export default new Vuex.Store({
         },
         multiplyHundred(state){
             state.counter = state.counter * 100;
+        },
+        // setDeleteModal(state, data){
+        //     state.deleteModalObj.showDeleteModal = false;
+        //     state.deleteModalObj.isDeleted = data;
+        // },
+        setDeleteModal(state, data){
+            const deleteModalObj = {
+                showDeleteModal:false,
+                deleteUrl:'',
+                deleteIndex:-1,
+                isDeleted:data,
+                deleteData:{
+
+                },
+            }
+            state.deleteModalObj = deleteModalObj;
+        },
+        
+        setDeleteModalObj(state, data){
+            state.deleteModalObj = data;
         }
     },
     /// actions asynchronous *** can be used for api calling

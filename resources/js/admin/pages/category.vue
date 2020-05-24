@@ -120,7 +120,7 @@
 					</Modal>	
 				 <!-- Category edit modal -->	
 				 <!-- delete modal -->
-					<Modal v-model="deleteModal" width="360">
+					<!-- <Modal v-model="deleteModal" width="360">
 						<p slot="header" style="color:#f60;text-align:center">
 							<Icon type="ios-information-circle"></Icon>
 							<span>Delete confirmation</span>
@@ -131,9 +131,9 @@
 						<div slot="footer">
 							<Button type="error" size="large" long :loading="isAdding" :disabled="isAdding" @click="deleteCategory">Delete</Button>
 						</div>
-					</Modal>
+					</Modal> -->
 				 <!-- delete modal -->
-
+					<deleteModal></deleteModal>
 			</div>
 		</div>
 	</div>
@@ -153,7 +153,12 @@
 	}
 </style>
 <script>
+import deleteModal from '../components/deletemodal';
+import { mapGetters } from 'vuex';
 export default {
+	components:{
+		deleteModal,
+	},
 	data(){
 		return{
 			data: {
@@ -186,6 +191,18 @@ export default {
 			token:'',
 			div:false,
 		}	
+	},
+
+	computed:{
+        ...mapGetters(['getDeleteModalObj'])
+	},
+	watch:{
+		getDeleteModalObj(obj){
+			// console.log(obj);
+			if(obj.isDeleted){
+				this.categories.splice(obj.deleteIndex,1);
+			}
+		}
 	},
 
 	async created(){
@@ -261,21 +278,21 @@ export default {
 			}
 		},
 		// delete Category
-		async deleteCategory(){
-				this.btnloading();
-				const res = await this.callApi('post', '/admin/category/delete_category',this.deleteData);
-				if(res.status===200){
-					this.categories.splice(this.deleteIndex,1);
-					this.s('Category has been deleted successfully!');
-					this.btnloadingOff();
-					this.closeDeleteModal();
-				} else {
-				this.btnloadingOff();
-				this.closeDeleteModal();
-				this.e();
-				}
+		// async deleteCategory(){
+		// 		this.btnloading();
+		// 		const res = await this.callApi('post', '/admin/category/delete_category',this.deleteData);
+		// 		if(res.status===200){
+		// 			this.categories.splice(this.deleteIndex,1);
+		// 			this.s('Category has been deleted successfully!');
+		// 			this.btnloadingOff();
+		// 			this.closeDeleteModal();
+		// 		} else {
+		// 		this.btnloadingOff();
+		// 		this.closeDeleteModal();
+		// 		this.e();
+		// 		}
 			
-		},
+		// },
 
 		//image remove v1
 		// async removeImage(){
@@ -415,12 +432,23 @@ export default {
 			this.editModal = false;
 			this.editIndex = -1;
 		},
+		// openDeleteModal(category, index){
+		// 	this.deleteIndex = index;
+		// 	this.deleteData.id = category.id;
+		// 	this.deleteData.categoryName = category.categoryName;
+		// 	this.deleteData.iconImage = category.iconImage;
+		// 	this.deleteModal = true;
+		// },
 		openDeleteModal(category, index){
-			this.deleteIndex = index;
-			this.deleteData.id = category.id;
-			this.deleteData.categoryName = category.categoryName;
-			this.deleteData.iconImage = category.iconImage;
-			this.deleteModal = true;
+			const deleteModalObj = {
+									showDeleteModal:true,
+									deleteUrl:'/admin/category/delete_category',
+									deleteIndex:index,
+									isDeleted:false,
+									deleteData:category,
+									
+			}
+			this.$store.commit('setDeleteModalObj',deleteModalObj);
 		},
 		closeDeleteModal(){
 			this.deleteIndex = -1;
