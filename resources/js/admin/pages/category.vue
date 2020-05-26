@@ -175,14 +175,16 @@ export default {
 				oldIconImage:'',
 				categoryName:'',
 			},
-            editIndex:-1,
-			deleteModal: false,
-			deleteIndex:-1,
-			deleteData:{
-				id:'',
-				categoryName:'',
-				iconImage:'',
-			},
+			editIndex:-1,
+			
+			// deleteModal: false,
+			// deleteIndex:-1,
+			// deleteData:{
+			// 	id:'',
+			// 	categoryName:'',
+			// 	iconImage:'',
+			// },
+
 			//image remove v1
 			// deleteImage:{
 			// 	iconImage:'',
@@ -198,7 +200,6 @@ export default {
 	},
 	watch:{
 		getDeleteModalObj(obj){
-			// console.log(obj);
 			if(obj.isDeleted){
 				this.categories.splice(obj.deleteIndex,1);
 			}
@@ -450,13 +451,13 @@ export default {
 			}
 			this.$store.commit('setDeleteModalObj',deleteModalObj);
 		},
-		closeDeleteModal(){
-			this.deleteIndex = -1;
-			this.deleteData.id = '';
-			this.deleteData.categoryName = '';
-			this.deleteData.iconImage = '';
-			this.deleteModal = false;
-		},
+		// closeDeleteModal(){
+		// 	this.deleteIndex = -1;
+		// 	this.deleteData.id = '';
+		// 	this.deleteData.categoryName = '';
+		// 	this.deleteData.iconImage = '';
+		// 	this.deleteModal = false;
+		// },
 		tempOldIconImage(img){
 			this.editData.oldIconImage = img;
 		},

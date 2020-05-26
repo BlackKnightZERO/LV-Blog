@@ -1957,6 +1957,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
@@ -1966,7 +1967,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   },
   computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])(['getDeleteModalObj'])),
   methods: {
-    deleteCategory: function deleteCategory() {
+    deleteObj: function deleteObj() {
       var _this = this;
 
       return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee() {
@@ -1990,15 +1991,19 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
                 if (res.status === 200) {
                   _this.isDeleting = false;
 
-                  _this.s('Category has been deleted successfully!');
+                  _this.s('Item has been deleted successfully!');
 
-                  _this.$store.commit('setDeleteModal', true);
+                  _this.$store.commit('setDeleteModal', true); // this.$store.commit('resetDeleteModal',-1);
+                  // this.$store.dispatch('reset',-1);
+
                 } else {
                   _this.isDeleting = false;
 
                   _this.e();
 
-                  _this.$store.commit('setDeleteModal', false);
+                  _this.$store.commit('setDeleteModal', false); // this.$store.commit('resetDeleteModal',-1);
+                  // this.$store.dispatch('reset',-1);
+
                 }
 
               case 6:
@@ -2028,9 +2033,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
                 res = _context2.sent;
 
                 if (res.status === 200) {
-                  console.log('successfully deleted category pic from server');
+                  console.log('successfully deleted old pic from server');
                 } else {
-                  console.log('operation failed: old category pic failed to delete from server');
+                  console.log('operation failed: old pic deletion from server');
                 }
 
               case 5:
@@ -2040,6 +2045,16 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
           }
         }, _callee2);
       }))();
+    },
+    cancel: function cancel() {
+      var deleteModalObj = {
+        showDeleteModal: false,
+        deleteUrl: '',
+        deleteIndex: -1,
+        isDeleted: false,
+        deleteData: {}
+      };
+      this.$store.commit('setDeleteModalObj', deleteModalObj);
     }
   }
 });
@@ -2248,13 +2263,13 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         categoryName: ''
       },
       editIndex: -1,
-      deleteModal: false,
-      deleteIndex: -1,
-      deleteData: {
-        id: '',
-        categoryName: '',
-        iconImage: ''
-      },
+      // deleteModal: false,
+      // deleteIndex:-1,
+      // deleteData:{
+      // 	id:'',
+      // 	categoryName:'',
+      // 	iconImage:'',
+      // },
       //image remove v1
       // deleteImage:{
       // 	iconImage:'',
@@ -2266,7 +2281,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])(['getDeleteModalObj'])),
   watch: {
     getDeleteModalObj: function getDeleteModalObj(obj) {
-      // console.log(obj);
       if (obj.isDeleted) {
         this.categories.splice(obj.deleteIndex, 1);
       }
@@ -2670,13 +2684,13 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       };
       this.$store.commit('setDeleteModalObj', deleteModalObj);
     },
-    closeDeleteModal: function closeDeleteModal() {
-      this.deleteIndex = -1;
-      this.deleteData.id = '';
-      this.deleteData.categoryName = '';
-      this.deleteData.iconImage = '';
-      this.deleteModal = false;
-    },
+    // closeDeleteModal(){
+    // 	this.deleteIndex = -1;
+    // 	this.deleteData.id = '';
+    // 	this.deleteData.categoryName = '';
+    // 	this.deleteData.iconImage = '';
+    // 	this.deleteModal = false;
+    // },
     tempOldIconImage: function tempOldIconImage(img) {
       this.editData.oldIconImage = img;
     },
@@ -2702,12 +2716,20 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
 /* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _components_deletemodal__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../components/deletemodal */ "./resources/js/admin/components/deletemodal.vue");
+/* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm.js");
 
 
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
 
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 //
 //
 //
@@ -2798,7 +2820,12 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 //
 //
 //
+
+
 /* harmony default export */ __webpack_exports__["default"] = ({
+  components: {
+    deleteModal: _components_deletemodal__WEBPACK_IMPORTED_MODULE_1__["default"]
+  },
   data: function data() {
     return {
       data: {
@@ -2812,14 +2839,25 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         id: '',
         tagName: ''
       },
-      editIndex: -1,
-      deleteModal: false,
-      deleteIndex: -1,
-      deleteData: {
-        id: '',
-        tagName: ''
-      }
+      editIndex: -1 // deleteModal: false,
+      // deleteIndex:-1,
+      // deleteData:{
+      // 	id:'',
+      // 	tagName:'',
+      // },
+
     };
+  },
+  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])(['getDeleteModalObj'])),
+  watch: {
+    getDeleteModalObj: function getDeleteModalObj(obj) {
+      console.log(obj.deleteIndex);
+      console.log(this.tags);
+
+      if (obj.isDeleted) {
+        this.tags.splice(obj.deleteIndex, 1);
+      }
+    }
   },
   created: function created() {
     var _this = this;
@@ -2969,47 +3007,20 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       }))();
     },
     // delete Tag
-    deleteTag: function deleteTag() {
-      var _this4 = this;
-
-      return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee4() {
-        var res;
-        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee4$(_context4) {
-          while (1) {
-            switch (_context4.prev = _context4.next) {
-              case 0:
-                _this4.btnloading();
-
-                _context4.next = 3;
-                return _this4.callApi('post', '/admin/tag/delete_tag', _this4.deleteData);
-
-              case 3:
-                res = _context4.sent;
-
-                if (res.status === 200) {
-                  _this4.tags.splice(_this4.deleteIndex, 1);
-
-                  _this4.s('Tag has been deleted successfully!');
-
-                  _this4.btnloadingOff();
-
-                  _this4.closeDeleteModal();
-                } else {
-                  _this4.btnloadingOff();
-
-                  _this4.closeDeleteModal();
-
-                  _this4.e();
-                }
-
-              case 5:
-              case "end":
-                return _context4.stop();
-            }
-          }
-        }, _callee4);
-      }))();
-    },
+    // async deleteTag(){
+    // 		this.btnloading();
+    // 		const res = await this.callApi('post', '/admin/tag/delete_tag',this.deleteData);
+    // 		if(res.status===200){
+    // 			this.tags.splice(this.deleteIndex,1);
+    // 			this.s('Tag has been deleted successfully!');
+    // 			this.btnloadingOff();
+    // 			this.closeDeleteModal();
+    // 		} else {
+    // 		this.btnloadingOff();
+    // 		this.closeDeleteModal();
+    // 		this.e();
+    // 		}
+    // },
     // async deleteTag(){
     // 	if(!confirm('Are You Sure About Deleting This Tag?')){
     // 	} else {
@@ -3056,18 +3067,28 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       this.editModal = false;
       this.editIndex = -1;
     },
+    // openDeleteModal(tag, index){
+    // 	this.deleteIndex = index;
+    // 	this.deleteData.id = tag.id;
+    // 	this.deleteData.tagName = tag.tagName;
+    // 	this.deleteModal = true;
+    // },
     openDeleteModal: function openDeleteModal(tag, index) {
-      this.deleteIndex = index;
-      this.deleteData.id = tag.id;
-      this.deleteData.tagName = tag.tagName;
-      this.deleteModal = true;
-    },
-    closeDeleteModal: function closeDeleteModal() {
-      this.deleteIndex = -1;
-      this.deleteData.id = '';
-      this.deleteData.tagName = '';
-      this.deleteModal = false;
-    }
+      var deleteModalObj = {
+        showDeleteModal: true,
+        deleteUrl: '/admin/tag/delete_tag',
+        deleteIndex: index,
+        isDeleted: false,
+        deleteData: tag
+      };
+      this.$store.commit('setDeleteModalObj', deleteModalObj);
+    } // closeDeleteModal(){
+    // 	this.deleteIndex = -1;
+    // 	this.deleteData.id = '';
+    // 	this.deleteData.tagName = '';
+    // 	this.deleteModal = false;
+    // },
+
   }
 });
 
@@ -67969,10 +67990,11 @@ var render = function() {
         {
           attrs: {
             value: _vm.getDeleteModalObj.showDeleteModal,
-            "mask-closeable": false,
-            closeable: false,
+            "mask-closable": false,
+            closable: true,
             width: "360"
-          }
+          },
+          on: { "on-cancel": _vm.cancel }
         },
         [
           _c(
@@ -68008,7 +68030,7 @@ var render = function() {
                     loading: _vm.isDeleting,
                     disabled: _vm.isDeleting
                   },
-                  on: { click: _vm.deleteCategory }
+                  on: { click: _vm.deleteObj }
                 },
                 [_vm._v("Delete")]
               )
@@ -69172,61 +69194,7 @@ var render = function() {
             1
           ),
           _vm._v(" "),
-          _c(
-            "Modal",
-            {
-              attrs: { width: "360" },
-              model: {
-                value: _vm.deleteModal,
-                callback: function($$v) {
-                  _vm.deleteModal = $$v
-                },
-                expression: "deleteModal"
-              }
-            },
-            [
-              _c(
-                "p",
-                {
-                  staticStyle: { color: "#f60", "text-align": "center" },
-                  attrs: { slot: "header" },
-                  slot: "header"
-                },
-                [
-                  _c("Icon", { attrs: { type: "ios-information-circle" } }),
-                  _vm._v(" "),
-                  _c("span", [_vm._v("Delete confirmation")])
-                ],
-                1
-              ),
-              _vm._v(" "),
-              _c("div", { staticStyle: { "text-align": "center" } }, [
-                _c("p", [_vm._v("Are you sure you want to delete it?")])
-              ]),
-              _vm._v(" "),
-              _c(
-                "div",
-                { attrs: { slot: "footer" }, slot: "footer" },
-                [
-                  _c(
-                    "Button",
-                    {
-                      attrs: {
-                        type: "error",
-                        size: "large",
-                        long: "",
-                        loading: _vm.isAdding,
-                        disabled: _vm.isAdding
-                      },
-                      on: { click: _vm.deleteTag }
-                    },
-                    [_vm._v("Delete")]
-                  )
-                ],
-                1
-              )
-            ]
-          )
+          _c("deleteModal")
         ],
         1
       )
@@ -86766,12 +86734,15 @@ vue__WEBPACK_IMPORTED_MODULE_0___default.a.use(vuex__WEBPACK_IMPORTED_MODULE_1__
       var deleteModalObj = {
         showDeleteModal: false,
         deleteUrl: '',
-        deleteIndex: -1,
+        deleteIndex: state.deleteModalObj.deleteIndex,
         isDeleted: data,
         deleteData: {}
       };
       state.deleteModalObj = deleteModalObj;
     },
+    // resetDeleteModal(state,data){
+    //     state.deleteModalObj.deleteIndex = data;
+    // },
     setDeleteModalObj: function setDeleteModalObj(state, data) {
       state.deleteModalObj = data;
     }
@@ -86783,7 +86754,10 @@ vue__WEBPACK_IMPORTED_MODULE_0___default.a.use(vuex__WEBPACK_IMPORTED_MODULE_1__
       // console.log(commit);
       // console.log(payload);
       commit('decrementCounter', payload);
-    }
+    } // reset({ commit }, data){
+    //     commit('resetDeleteModal',data)
+    // }
+
   }
 }));
 

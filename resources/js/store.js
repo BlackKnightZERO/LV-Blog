@@ -52,7 +52,7 @@ export default new Vuex.Store({
             const deleteModalObj = {
                 showDeleteModal:false,
                 deleteUrl:'',
-                deleteIndex:-1,
+                deleteIndex:state.deleteModalObj.deleteIndex,
                 isDeleted:data,
                 deleteData:{
 
@@ -60,6 +60,9 @@ export default new Vuex.Store({
             }
             state.deleteModalObj = deleteModalObj;
         },
+        // resetDeleteModal(state,data){
+        //     state.deleteModalObj.deleteIndex = data;
+        // },
         
         setDeleteModalObj(state, data){
             state.deleteModalObj = data;
@@ -72,7 +75,10 @@ export default new Vuex.Store({
             // console.log(payload);
             commit('decrementCounter',payload);
 
-        }
+        },
+        // reset({ commit }, data){
+        //     commit('resetDeleteModal',data)
+        // }
     }
 
 })

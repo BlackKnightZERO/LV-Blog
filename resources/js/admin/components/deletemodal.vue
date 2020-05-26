@@ -2,8 +2,9 @@
     <div>
         <!-- delete modal -->
 					<Modal :value="getDeleteModalObj.showDeleteModal" 
-                    :mask-closeable="false"
-                    :closeable="false"
+                    :mask-closable="false"
+                    :closable="true"
+                    @on-cancel="cancel"
                     width="360">
 						<p slot="header" style="color:#f60;text-align:center">
 							<Icon type="ios-information-circle"></Icon>
@@ -13,7 +14,7 @@
 							<p>Are you sure you want to delete it?</p>
 						</div>
 						<div slot="footer">
-							<Button type="error" size="large" long :loading="isDeleting" :disabled="isDeleting" @click="deleteCategory">Delete</Button>
+							<Button type="error" size="large" long :loading="isDeleting" :disabled="isDeleting" @click="deleteObj">Delete</Button>
 						</div>
 					</Modal>
 		<!-- delete modal -->
@@ -33,7 +34,7 @@ export default {
         ...mapGetters(['getDeleteModalObj'])
     },
     methods:{
-        async deleteCategory(){
+        async deleteObj(){
             this.isDeleting = true;
             if(this.getDeleteModalObj.deleteData.iconImage){
                 this.clearOldIconImage();
@@ -41,12 +42,16 @@ export default {
             const res = await this.callApi('post', this.getDeleteModalObj.deleteUrl, this.getDeleteModalObj.deleteData);
             if(res.status===200){
                 this.isDeleting = false;
-                this.s('Category has been deleted successfully!');
+                this.s('Item has been deleted successfully!');
                 this.$store.commit('setDeleteModal', true);
+                // this.$store.commit('resetDeleteModal',-1);
+                // this.$store.dispatch('reset',-1);
             } else {
                 this.isDeleting = false;
                 this.e();
                 this.$store.commit('setDeleteModal', false);
+                // this.$store.commit('resetDeleteModal',-1);
+                // this.$store.dispatch('reset',-1);
             }
 			
         },
@@ -54,10 +59,23 @@ export default {
             let image = this.getDeleteModalObj.deleteData.iconImage;
             const res = await this.callApi('post','/admin/category/remove_image',{"iconImage": image});
 			if(res.status===200){
-				console.log('successfully deleted category pic from server');
+				console.log('successfully deleted old pic from server');
 			} else {
-				console.log('operation failed: old category pic failed to delete from server');
+				console.log('operation failed: old pic deletion from server');
 			}
+        },
+        cancel(){
+            const deleteModalObj = {
+									showDeleteModal:false,
+									deleteUrl:'',
+									deleteIndex:-1,
+									isDeleted:false,
+									deleteData:{
+
+                                    },
+									
+			}
+			this.$store.commit('setDeleteModalObj',deleteModalObj);
         },
     }
 }

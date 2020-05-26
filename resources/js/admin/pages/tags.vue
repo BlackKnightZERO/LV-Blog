@@ -69,7 +69,7 @@
 					</Modal>	
 				 <!-- tag edit midal -->	
 				 <!-- delete modal -->
-					<Modal v-model="deleteModal" width="360">
+					<!-- <Modal v-model="deleteModal" width="360">
 						<p slot="header" style="color:#f60;text-align:center">
 							<Icon type="ios-information-circle"></Icon>
 							<span>Delete confirmation</span>
@@ -80,16 +80,21 @@
 						<div slot="footer">
 							<Button type="error" size="large" long :loading="isAdding" :disabled="isAdding" @click="deleteTag">Delete</Button>
 						</div>
-					</Modal>
+					</Modal> -->
 				 <!-- delete modal -->
-
+				 <deleteModal></deleteModal>
 			</div>
 		</div>
 	</div>
 </template>
 
 <script>
+import deleteModal from '../components/deletemodal';
+import { mapGetters } from 'vuex';
 export default {
+	components:{
+		deleteModal,
+	},
 	data(){
 		return{
 			data: {
@@ -104,14 +109,28 @@ export default {
 				tagName:'',
 			},
 			editIndex:-1,
-			deleteModal: false,
+			
+			// deleteModal: false,
+			// deleteIndex:-1,
+			// deleteData:{
+			// 	id:'',
+			// 	tagName:'',
+			// },
 
-			deleteIndex:-1,
-			deleteData:{
-				id:'',
-				tagName:'',
-			},
 		}	
+	},
+
+	computed:{
+        ...mapGetters(['getDeleteModalObj'])
+	},
+	watch:{
+		getDeleteModalObj(obj){
+			console.log(obj.deleteIndex);
+			console.log(this.tags);
+			if(obj.isDeleted){
+				this.tags.splice(obj.deleteIndex,1);
+			}
+		}
 	},
 
 	async created(){
@@ -178,21 +197,22 @@ export default {
 			}
 		},
 		// delete Tag
-		async deleteTag(){
-				this.btnloading();
-				const res = await this.callApi('post', '/admin/tag/delete_tag',this.deleteData);
-				if(res.status===200){
-					this.tags.splice(this.deleteIndex,1);
-					this.s('Tag has been deleted successfully!');
-					this.btnloadingOff();
-					this.closeDeleteModal();
-				} else {
-				this.btnloadingOff();
-				this.closeDeleteModal();
-				this.e();
-				}
+		// async deleteTag(){
+		// 		this.btnloading();
+		// 		const res = await this.callApi('post', '/admin/tag/delete_tag',this.deleteData);
+		// 		if(res.status===200){
+		// 			this.tags.splice(this.deleteIndex,1);
+		// 			this.s('Tag has been deleted successfully!');
+		// 			this.btnloadingOff();
+		// 			this.closeDeleteModal();
+		// 		} else {
+		// 		this.btnloadingOff();
+		// 		this.closeDeleteModal();
+		// 		this.e();
+		// 		}
 			
-		},
+		// },
+
 		// async deleteTag(){
 		// 	if(!confirm('Are You Sure About Deleting This Tag?')){
 
@@ -241,18 +261,28 @@ export default {
 			this.editModal = false;
 			this.editIndex = -1;
 		},
+		// openDeleteModal(tag, index){
+		// 	this.deleteIndex = index;
+		// 	this.deleteData.id = tag.id;
+		// 	this.deleteData.tagName = tag.tagName;
+		// 	this.deleteModal = true;
+		// },
 		openDeleteModal(tag, index){
-			this.deleteIndex = index;
-			this.deleteData.id = tag.id;
-			this.deleteData.tagName = tag.tagName;
-			this.deleteModal = true;
+			const deleteModalObj = {
+									showDeleteModal:true,
+									deleteUrl:'/admin/tag/delete_tag',
+									deleteIndex:index,
+									isDeleted:false,
+									deleteData:tag,
+			}
+			this.$store.commit('setDeleteModalObj', deleteModalObj);
 		},
-		closeDeleteModal(){
-			this.deleteIndex = -1;
-			this.deleteData.id = '';
-			this.deleteData.tagName = '';
-			this.deleteModal = false;
-		},
+		// closeDeleteModal(){
+		// 	this.deleteIndex = -1;
+		// 	this.deleteData.id = '';
+		// 	this.deleteData.tagName = '';
+		// 	this.deleteModal = false;
+		// },
 		
 	},
 }
