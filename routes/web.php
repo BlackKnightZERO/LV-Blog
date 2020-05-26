@@ -36,6 +36,11 @@ Route::prefix('admin')->namespace('Admin')->group(function () {
     Route::post('/category/create_category', 'CategoryController@add');
     Route::post('/category/update_category', 'CategoryController@update');
     Route::post('/category/delete_category', 'CategoryController@delete');
+
+    //users
+    Route::get('/users/get_users','UserController@get');
+    Route::post('/users/create_user','UserController@add');
+    
 });
 
 

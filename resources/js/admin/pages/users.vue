@@ -5,58 +5,71 @@
 					
 				<!--~~~~~~~ TABLE ONE ~~~~~~~~~-->
 				<div class="_1adminOverveiw_table_recent _box_shadow _border_radious _mar_b30 _p20" v-if="!loadingSpinner">
-					<p class="_title0">Tags <Button @click="openAddModal"><Icon type="md-add" /> Add</Button></p>
+					<p class="_title0">Users <Button @click="openAddModal"><Icon type="md-add" /> Add</Button></p>
 
 					<div class="_overflow _table_div">
 						<table class="_table">
-								<!-- TABLE TITLE -->
 							<tr>
-								<th>ID</th>
-								<th>Tag Name</th>
+								<th>Sl</th>
+								<th>FullName</th>
+								<th>E-Mail</th>
+								<th>Type</th>
 								<th>Created At</th>
 								<th>Action</th>
 							</tr>
-								<!-- TABLE TITLE -->
-								<!-- ITEMS -->
-							
-							<tr v-for="(tag, index) in tags" :key="index">
+							<tr v-for="(user, index) in users" :key="index">
 								<td>{{ index+1 }}</td>
-								<td class="_table_name">{{ tag.tagName }}</td>
-								<td>{{ tag.created_at }}</td>
+								<td class="_table_name">{{ user.fullName }}</td>
+                                <td>{{ user.email }}</td>
+                                <td>{{ user.userType }}</td>
+								<td>{{ user.created_at }}</td>
 								<td>
 									<Button type="info" size="small" @click="openEditModal(tag, index)">Edit</Button>
 									<Button type="error" size="small" @click="openDeleteModal(tag, index)">Delete</Button>
-									<!-- <Button type="error" size="small" @click="deleteTag(tag, index)"  :loading="tag.isDeleting">{{ tag.isDeleting ? 'Deleting..' : 'Delete'}}</Button> -->
-
-									<!-- <button class="_btn _action_btn edit_btn1" type="button">Edit</button>
-									<button class="_btn _action_btn make_btn1" type="button">Delete</button> -->
 								</td>
-							</tr>							
-								<!-- ITEMS -->
-								
+							</tr>									
 						</table>
 					</div>
 				</div>
-				<div v-else>
+                <div v-else>
 					<div class="lds-ripple"><div></div><div></div></div>
 				</div>
-				 <!-- <Page :total="100" /> -->
-				 <!-- tag adding midal -->
+				 <!-- Add modal -->
 				  	<Modal
 						v-model="addModal"
-						title="Add a Tag"
+						title="Add User"
 						:mask-closable="false"
-						:closable="false"
+						:closable="true"
 						>
-						<Input prefix="ios-link" clearable v-model="data.tagName" placeholder="Tag Name" style="width: 100%" />
+                        <div class="spacer">
+                            <Input prefix="ios-contact" type="text" clearable v-model="data.fullName" placeholder="Full Name" style="width: 100%" />
+                        </div>
+						 <div class="spacer">
+                             <Input prefix="ios-mail-outline" type="email" clearable v-model="data.email" placeholder="E-Mail" style="width: 100%" />
+                         </div>
+						 <div class="spacer">
+                             <Input prefix="ios-lock" type="password" clearable v-model="data.password" placeholder="Password" style="width: 100%" />
+                         </div>
+						 <div class="spacer">
+                             <Layout style="background:#ffffff!important;">
+                                 <Content style="margin: auto 16px;text-align: right;"></Content>
+                                    <Sider hide-trigger>
+                                        <Select prefix="md-paper-plane" v-model="data.userType"  placeholder="User type">
+                                            <Option value="2">Editor</Option>
+                                            <Option value="1">Admin</Option>
+                                        </Select>
+                                    </Sider>
+                             </Layout>
+                         </div>
 						<div slot="footer">
 							<Button type="default" @click="closeAddModal">close</Button>
-							<Button type="primary" @click="addTag" :disabled="isAdding" :loading="isAdding">{{ isAdding ? 'Adding..' : 'Add'}}</Button>
+							<Button type="primary" @click="addUser" :disabled="isAdding" :loading="isAdding">{{ isAdding ? 'Adding..' : 'Add'}}</Button>
 						</div>
 
 					</Modal>	
-				 <!-- tag adding midal -->	
-				  <!-- tag edit midal -->
+				 <!-- Add modal -->	
+
+				  <!-- Edit modal -->
 				  	<Modal
 						v-model="editModal"
 						title="Edit Tag"
@@ -68,29 +81,27 @@
 							<Button type="default" @click="closeEditModal">close</Button>
 							<Button type="primary" @click="updateTag" :disabled="isAdding" :loading="isAdding">{{ isAdding ? 'Updating..' : 'Update'}}</Button>
 						</div>
-
-					</Modal>	
-				 <!-- tag edit midal -->	
-				 <!-- delete modal -->
-					<!-- <Modal v-model="deleteModal" width="360">
-						<p slot="header" style="color:#f60;text-align:center">
-							<Icon type="ios-information-circle"></Icon>
-							<span>Delete confirmation</span>
-						</p>
-						<div style="text-align:center">
-							<p>Are you sure you want to delete it?</p>
-						</div>
-						<div slot="footer">
-							<Button type="error" size="large" long :loading="isAdding" :disabled="isAdding" @click="deleteTag">Delete</Button>
-						</div>
-					</Modal> -->
+					</Modal>
+                    <!-- Edit modal -->	
 				 <!-- delete modal -->
 				 <deleteModal></deleteModal>
+                  <!-- delete modal -->
 			</div>
 		</div>
 	</div>
 </template>
+
 <style scoped>
+.spacer{
+    margin : 5px 5px;
+}
+.ivu-layout-sider{
+    width: 200px;
+    min-width: 200px;
+    max-width: 200px;
+    flex: 0 0 200px;
+    border-radius: 4px!important;
+}
 .lds-ripple {
 	display: inline-block;
 	position: relative;
@@ -125,6 +136,7 @@
 	}
 	}
 </style>
+
 <script>
 import deleteModal from '../components/deletemodal';
 import { mapGetters } from 'vuex';
@@ -135,25 +147,24 @@ export default {
 	data(){
 		return{
 			data: {
-				tagName:'',
-			},
+				fullName:'',
+				email :'',
+				password :'',
+				userType :'',
+            },
+            users:[],
 			addModal: false,
 			editModal: false,
 			isAdding: false,
-			tags:[],
 			editData: {
-				id:'',
-				tagName:'',
+				fullName:'',
+				email :'',
+				password :'',
+				userType :'',
 			},
-			editIndex:-1,
-			
-			// deleteModal: false,
-			// deleteIndex:-1,
-			// deleteData:{
-			// 	id:'',
-			// 	tagName:'',
-			// },
-			loadingSpinner: true,
+            editIndex:-1,
+            
+            loadingSpinner: true,
 		}	
 	},
 
@@ -171,13 +182,13 @@ export default {
 	},
 
 	async created(){
-		const res = await this.callApi('get','/admin/tag/get_tags');
+		const res = await this.callApi('get','/admin/users/get_users');
 		
 		if(res.status==200){
-			this.loadingSpinner=false
-			this.tags = res.data
+            this.loadingSpinner=false
+			this.users = res.data
 		} else {
-			this.loadingSpinner=false
+            this.loadingSpinner=false
 			this.e();
 		}
 	},
@@ -185,27 +196,38 @@ export default {
 	methods:{
 
 		//add Tag
-		async addTag(){
+		async addUser(){
 			this.btnloading();
-			// if(this.data.tagName.trim()==''){
-			// 	this.btnloadingOff();
-			// 	return this.e('Tagname is required!');
-			// } 
-			const res = await this.callApi('post','/admin/tag/create_tag',this.data);
+			if(this.data.fullName.trim()==''){
+				this.btnloadingOff();
+				return this.e('Full Name is required!');
+            } 
+            if(this.data.email.trim()==''){
+				this.btnloadingOff();
+				return this.e('E-Mail is required!');
+            } 
+            if(this.data.password.trim()==''){
+				this.btnloadingOff();
+				return this.e('Password is required!');
+            } 
+            if(this.data.userType.trim()==''){
+				this.btnloadingOff();
+				return this.e('Type is required!');
+			} 
+			const res = await this.callApi('post','/admin/users/create_user',this.data);
 			if(res.status===201){
-				this.tags.unshift(res.data); //adds response to the begining of tags array
+				this.users.unshift(res.data);
 				this.btnloadingOff();
 				this.s('Tag has been added successfully!');
 				this.closeAddModal();
-				this.clearAddTextField();
+				this.clearAddModalTextField();
 			} else if(res.status===422) {
-				for(let i in res.data.errors) this.e(res.data.errors[i])
-				this.btnloadingOff();
+                for(let i in res.data.errors) this.e(res.data.errors[i])
+                this.btnloadingOff();
 			} else {
-				this.btnloadingOff();
+                this.btnloadingOff();
                 this.e();
             }
-			
 		},
 		//update Tag
 		async updateTag(){
@@ -232,55 +254,24 @@ export default {
 				}
 			}
 		},
-		// delete Tag
-		// async deleteTag(){
-		// 		this.btnloading();
-		// 		const res = await this.callApi('post', '/admin/tag/delete_tag',this.deleteData);
-		// 		if(res.status===200){
-		// 			this.tags.splice(this.deleteIndex,1);
-		// 			this.s('Tag has been deleted successfully!');
-		// 			this.btnloadingOff();
-		// 			this.closeDeleteModal();
-		// 		} else {
-		// 		this.btnloadingOff();
-		// 		this.closeDeleteModal();
-		// 		this.e();
-		// 		}
-			
-		// },
-
-		// async deleteTag(){
-		// 	if(!confirm('Are You Sure About Deleting This Tag?')){
-
-		// 	} else {
-		// 		this.$set(tag, 'isDeleting', true);
-		// 		const res = await this.callApi('post', '/app/delete_tag',tag);
-		// 		if(res.status===200){
-		// 			this.tags.splice(index,1);
-		// 			this.s('Tag has been deleted successfully!');
-		// 			this.$set(tag, 'isDeleting', false);
-		// 		} else {
-		// 		this.$set(tag, 'isDeleting', false);
-		// 		this.e();
-		// 		}
-		// 	}
-		// },
-
 		//others
 		openAddModal(){
 			this.addModal = true;
 		},
 		closeAddModal(){
 			this.addModal = false;
-		},
+        },
 		btnloading(){
 			this.isAdding=true;
 		},
 		btnloadingOff(){
 			this.isAdding=false;
 		},
-		clearAddTextField(){
-			this.data.tagName='';
+		clearAddModalTextField(){
+			fullName =''
+			email = ''
+			password = ''
+			userType = ''
 		},
 		clearEditTextField(){
 			this.editData.tagName='';
@@ -297,12 +288,6 @@ export default {
 			this.editModal = false;
 			this.editIndex = -1;
 		},
-		// openDeleteModal(tag, index){
-		// 	this.deleteIndex = index;
-		// 	this.deleteData.id = tag.id;
-		// 	this.deleteData.tagName = tag.tagName;
-		// 	this.deleteModal = true;
-		// },
 		openDeleteModal(tag, index){
 			const deleteModalObj = {
 									showDeleteModal:true,
@@ -312,14 +297,11 @@ export default {
 									deleteData:tag,
 			}
 			this.$store.commit('setDeleteModalObj', deleteModalObj);
-		},
-		// closeDeleteModal(){
-		// 	this.deleteIndex = -1;
-		// 	this.deleteData.id = '';
-		// 	this.deleteData.tagName = '';
-		// 	this.deleteModal = false;
-		// },
-		
+        },
+        cancel(){
+            this.clearAddModalTextField();
+            this.closeAddModal();
+        },
 	},
 }
 </script>

@@ -4,7 +4,7 @@
 			<div class="container-fluid">
 					
 				<!--~~~~~~~ TABLE ONE ~~~~~~~~~-->
-				<div class="_1adminOverveiw_table_recent _box_shadow _border_radious _mar_b30 _p20">
+				<div class="_1adminOverveiw_table_recent _box_shadow _border_radious _mar_b30 _p20" v-if="!loadingSpinner">
 					<p class="_title0">Categories <Button @click="openAddModal"><Icon type="md-add" /> Add</Button></p>
 
 					<div class="_overflow _table_div">
@@ -36,6 +36,9 @@
 								
 						</table>
 					</div>
+				</div>
+				<div v-else>
+					<div class="lds-ripple"><div></div><div></div></div>
 				</div>
 				 <!-- <Page :total="100" /> -->
 				 <!-- Category adding modal -->
@@ -151,6 +154,40 @@
 		white-space: normal;
 		-webkit-line-clamp: 2;
 	}
+	.lds-ripple {
+	display: inline-block;
+	position: relative;
+	width: 80px;
+	height: 80px;
+	}
+	.lds-ripple div {
+	position: absolute;
+	border: 4px solid #bfbfbf;
+	opacity: 1;
+	margin: 27vh 77vh;
+	border-radius: 50%;
+	animation: lds-ripple 1s cubic-bezier(0, 0.2, 0.8, 1) infinite;
+	}
+	.lds-ripple div:nth-child(2) {
+	animation-delay: -0.5s;
+	}
+	@keyframes lds-ripple {
+	0% {
+		top: 36px;
+		left: 36px;
+		width: 0;
+		height: 0;
+		opacity: 1;
+	}
+	100% {
+		top: 0px;
+		left: 0px;
+		width: 72px;
+		height: 72px;
+		opacity: 0;
+	}
+	}
+
 </style>
 <script>
 import deleteModal from '../components/deletemodal';
@@ -192,6 +229,7 @@ export default {
 
 			token:'',
 			div:false,
+			loadingSpinner: true,
 		}	
 	},
 
@@ -212,8 +250,10 @@ export default {
 		const res = await this.callApi('get','admin/category/get_category');
 		
 		if(res.status==200){
+			this.loadingSpinner=false
 			this.categories = res.data
 		} else {
+			this.loadingSpinner=false
 			this.e();
 		}
 	},

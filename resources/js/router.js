@@ -12,6 +12,7 @@ import useComponents from './vuex/useComponents'
 import dashboard from './admin/pages/dashboard'
 import tags from './admin/pages/tags'
 import category from './admin/pages/category'
+import users from './admin/pages/users'
 
 Vue.use(Router)
 
@@ -28,6 +29,10 @@ const routes = [
 	{
 		path: '/category',
       	component: category,
+	},
+	{
+		path: '/users',
+      	component: users,
 	},
 	
 
