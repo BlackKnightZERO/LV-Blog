@@ -21,6 +21,12 @@
 // Route::post('/app/category/create_category', 'AdminControler@categoryAdd');
 
 
+//login-logout route
+Route::prefix('user')->group(function () {
+    Route::post('/login/attempt', 'CustomController@login');
+    Route::get('/logout', 'CustomController@logout');
+});
+
 //ADMIN ROUTES
 Route::prefix('admin')->namespace('Admin')->group(function () {
     //tags

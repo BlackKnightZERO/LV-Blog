@@ -8,6 +8,9 @@ import methods from './components/pages/basic/methods'
 
 import useComponents from './vuex/useComponents'
 
+//login
+import login from './components/login'
+
 //admin imports
 import dashboard from './admin/pages/dashboard'
 import tags from './admin/pages/tags'
@@ -18,6 +21,10 @@ Vue.use(Router)
 
 const routes = [
 	//project routes
+	{
+		path: '/login',
+      	component: login,
+	},
 	{
 		path: '/dashboard',
       	component: dashboard,
