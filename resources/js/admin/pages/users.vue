@@ -24,8 +24,8 @@
                                 <td>{{ user.userType }}</td>
 								<td>{{ user.created_at }}</td>
 								<td>
-									<Button type="info" size="small" @click="openEditModal(tag, index)">Edit</Button>
-									<Button type="error" size="small" @click="openDeleteModal(tag, index)">Delete</Button>
+									<Button type="info" size="small" @click="openEditModal(user, index)">Edit</Button>
+									<Button type="error" size="small" @click="openDeleteModal(user, index)">Delete</Button>
 								</td>
 							</tr>									
 						</table>
@@ -55,8 +55,8 @@
                                  <Content style="margin: auto 16px;text-align: right;"></Content>
                                     <Sider hide-trigger>
                                         <Select prefix="md-paper-plane" v-model="data.userType"  placeholder="User type">
-                                            <Option value="2">Editor</Option>
-                                            <Option value="1">Admin</Option>
+                                            <Option value="Editor">Editor</Option>
+                                            <Option value="Admin">Admin</Option>
                                         </Select>
                                     </Sider>
                              </Layout>
@@ -72,14 +72,33 @@
 				  <!-- Edit modal -->
 				  	<Modal
 						v-model="editModal"
-						title="Edit Tag"
+						title="Edit User"
 						:mask-closable="false"
-						:closable="false"
+						:closable="true"
 						>
-						<Input prefix="ios-link" clearable v-model="editData.tagName" placeholder="Tag Name" style="width: 100%" />
+						<div class="spacer">
+                            <Input prefix="ios-contact" type="text" clearable v-model="editData.fullName" placeholder="Full Name" style="width: 100%" />
+                        </div>
+						 <div class="spacer">
+                             <Input prefix="ios-mail-outline" type="email" clearable v-model="editData.email" placeholder="E-Mail" style="width: 100%" />
+                         </div>
+						 <div class="spacer">
+                             <Input prefix="ios-lock" type="password" clearable v-model="editData.password" placeholder="Password" style="width: 100%" />
+                         </div>
+						 <div class="spacer">
+                             <Layout style="background:#ffffff!important;">
+                                 <Content style="margin: auto 16px;text-align: right;"></Content>
+                                    <Sider hide-trigger>
+                                        <Select prefix="md-paper-plane" v-model="editData.userType"  placeholder="User type">
+                                            <Option value="Editor">Editor</Option>
+                                            <Option value="Admin">Admin</Option>
+                                        </Select>
+                                    </Sider>
+                             </Layout>
+                         </div>
 						<div slot="footer">
 							<Button type="default" @click="closeEditModal">close</Button>
-							<Button type="primary" @click="updateTag" :disabled="isAdding" :loading="isAdding">{{ isAdding ? 'Updating..' : 'Update'}}</Button>
+							<Button type="primary" @click="updateUser" :disabled="isAdding" :loading="isAdding">{{ isAdding ? 'Updating..' : 'Update'}}</Button>
 						</div>
 					</Modal>
                     <!-- Edit modal -->	
@@ -102,39 +121,6 @@
     flex: 0 0 200px;
     border-radius: 4px!important;
 }
-.lds-ripple {
-	display: inline-block;
-	position: relative;
-	width: 80px;
-	height: 80px;
-	}
-	.lds-ripple div {
-	position: absolute;
-	border: 4px solid #bfbfbf;
-	opacity: 1;
-	margin: 27vh 77vh;
-	border-radius: 50%;
-	animation: lds-ripple 1s cubic-bezier(0, 0.2, 0.8, 1) infinite;
-	}
-	.lds-ripple div:nth-child(2) {
-	animation-delay: -0.5s;
-	}
-	@keyframes lds-ripple {
-	0% {
-		top: 36px;
-		left: 36px;
-		width: 0;
-		height: 0;
-		opacity: 1;
-	}
-	100% {
-		top: 0px;
-		left: 0px;
-		width: 72px;
-		height: 72px;
-		opacity: 0;
-	}
-	}
 </style>
 
 <script>
@@ -173,10 +159,10 @@ export default {
 	},
 	watch:{
 		getDeleteModalObj(obj){
-			console.log(obj.deleteIndex);
-			console.log(this.tags);
+			// console.log(obj.deleteIndex);
+			// console.log(this.users);
 			if(obj.isDeleted){
-				this.tags.splice(obj.deleteIndex,1);
+				this.users.splice(obj.deleteIndex,1);
 			}
 		}
 	},
@@ -230,29 +216,38 @@ export default {
             }
 		},
 		//update Tag
-		async updateTag(){
+		async updateUser(){
 			this.btnloading();
-			if(this.editData.tagName.trim()==''){
+			if(this.editData.fullName.trim()==''){
 				this.btnloadingOff();
-				return this.e('Tagname is required!');
+				return this.e('Full Name is required!');
+            } 
+            if(this.editData.email.trim()==''){
+				this.btnloadingOff();
+				return this.e('E-Mail is required!');
+            } 
+            if(this.editData.userType.trim()==''){
+				this.btnloadingOff();
+				return this.e('Type is required!');
 			} 
-			const res = await this.callApi('post','/admin/tag/update_tag',this.editData);
+			const res = await this.callApi('post','/admin/user/update_user',this.editData);
 			if(res.status===200){
-				this.tags[this.editIndex].tagName = this.editData.tagName;
+				this.users[this.editIndex].fullName = this.editData.fullName;
+				this.users[this.editIndex].email = this.editData.email;
+				this.users[this.editIndex].password = this.editData.password;
+				this.users[this.editIndex].userType = this.editData.userType;
+
 				this.btnloadingOff();
-				this.s('Tag has been edited successfully!');
+				this.s('User has been edited successfully!');
 				this.closeEditModal();
-				this.clearEditTextField();
-			} else {
-				if(res.status===422){
-					if(res.data.errors.tagName){
-						this.i(res.data.errors.tagName[0]);
-					}
-				} else {
+				this.clearEditModalTextField();
+			} else if(res.status===422) {
+				for(let i in res.data.errors) this.e(res.data.errors[i])
 				this.btnloadingOff();
-				this.e();
-				}
-			}
+			} else {
+				this.btnloadingOff();
+                this.e();
+            }
 		},
 		//others
 		openAddModal(){
@@ -273,34 +268,52 @@ export default {
 			password = ''
 			userType = ''
 		},
-		clearEditTextField(){
-			this.editData.tagName='';
+		clearEditModalTextField(){
+			this.editData.id = '';
+			this.editData.fullName = '';
+			this.editData.email = '';
+			this.editData.password = '';
+			this.editData.userType = '';
+			this.editIndex = -1;
 		},
-		openEditModal(tag, index){	
-			this.editModal=true;
-			this.editData.id = tag.id;
-			this.editData.tagName = tag.tagName;
+		openEditModal(user, index){	
+			this.editData.id = user.id;
+			this.editData.fullName = user.fullName;
+			this.editData.email = user.email;
+			this.editData.password = user.password;
+			this.editData.userType = user.userType;
 			this.editIndex = index;
+			this.editModal = true;
 		},
 		closeEditModal(){
 			this.editData.id = '';
-			this.editData.tagName = '';
-			this.editModal = false;
+			this.editData.fullName = '';
+			this.editData.email = '';
+			this.editData.password = '';
+			this.editData.userType = '';
 			this.editIndex = -1;
+			this.editModal = false;
 		},
-		openDeleteModal(tag, index){
+		openDeleteModal(user, index){
 			const deleteModalObj = {
 									showDeleteModal:true,
-									deleteUrl:'/admin/tag/delete_tag',
+									deleteUrl:'/admin/user/delete_user',
 									deleteIndex:index,
 									isDeleted:false,
-									deleteData:tag,
+									deleteData:user,
 			}
 			this.$store.commit('setDeleteModalObj', deleteModalObj);
         },
         cancel(){
-            this.clearAddModalTextField();
-            this.closeAddModal();
+            if(this.addModal==true){
+				this.clearAddModalTextField();
+				this.closeAddModal();
+			} else if (this.editModal==true){
+				this.clearEditModalTextField();
+				this.closeEditModal();
+			} else {
+
+			}
         },
 	},
 }

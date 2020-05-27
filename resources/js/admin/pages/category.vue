@@ -154,40 +154,6 @@
 		white-space: normal;
 		-webkit-line-clamp: 2;
 	}
-	.lds-ripple {
-	display: inline-block;
-	position: relative;
-	width: 80px;
-	height: 80px;
-	}
-	.lds-ripple div {
-	position: absolute;
-	border: 4px solid #bfbfbf;
-	opacity: 1;
-	margin: 27vh 77vh;
-	border-radius: 50%;
-	animation: lds-ripple 1s cubic-bezier(0, 0.2, 0.8, 1) infinite;
-	}
-	.lds-ripple div:nth-child(2) {
-	animation-delay: -0.5s;
-	}
-	@keyframes lds-ripple {
-	0% {
-		top: 36px;
-		left: 36px;
-		width: 0;
-		height: 0;
-		opacity: 1;
-	}
-	100% {
-		top: 0px;
-		left: 0px;
-		width: 72px;
-		height: 72px;
-		opacity: 0;
-	}
-	}
-
 </style>
 <script>
 import deleteModal from '../components/deletemodal';
@@ -274,20 +240,13 @@ export default {
 				this.s('Category has been added successfully!');
 				this.closeSuccAddModal();
 				this.clearUploadFields();
-			} else {
-				if(res.status===422){
-					if(res.data.errors.categoryName){
-						this.i(res.data.errors.categoryName[0]);
-					} 
-					if (res.data.errors.iconImage){
-						this.i(res.data.errors.iconImage[0]);
-					}
-					this.btnloadingOff();
-				} else {
+			} else if(res.status===422) {
+				for(let i in res.data.errors) this.e(res.data.errors[i])
 				this.btnloadingOff();
-				this.e();
-				}
-			}
+			} else {
+				this.btnloadingOff();
+                this.e();
+            }
 			
 		},
 		//update Category
@@ -307,16 +266,13 @@ export default {
 				this.s('Category has been edited successfully!');
 				this.closeEditModal();
 				this.clearEditTextField();
-			} else {
-				if(res.status===422){
-					if(res.data.errors.categoryName){
-						this.i(res.data.errors.categoryName[0]);
-					}
-				} else {
+			} else if(res.status===422) {
+				for(let i in res.data.errors) this.e(res.data.errors[i])
 				this.btnloadingOff();
-				this.e();
-				}
-			}
+			} else {
+				this.btnloadingOff();
+                this.e();
+            }
 		},
 		// delete Category
 		// async deleteCategory(){
@@ -507,6 +463,15 @@ export default {
 		toggleButton(){
 			this.div = !this.div;
 		},
+		// cancel(){
+        //     if(this.addModal==true){
+		// 		this.closeAddModal();
+		// 	} else if (this.editModal==true){
+		// 		this.closeEditModal();
+		// 	} else {
+
+		// 	}
+        // },
 		
 	},
 }

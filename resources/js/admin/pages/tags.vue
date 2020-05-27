@@ -46,7 +46,7 @@
 						v-model="addModal"
 						title="Add a Tag"
 						:mask-closable="false"
-						:closable="false"
+						:closable="true"
 						>
 						<Input prefix="ios-link" clearable v-model="data.tagName" placeholder="Tag Name" style="width: 100%" />
 						<div slot="footer">
@@ -61,7 +61,7 @@
 						v-model="editModal"
 						title="Edit Tag"
 						:mask-closable="false"
-						:closable="false"
+						:closable="true"
 						>
 						<Input prefix="ios-link" clearable v-model="editData.tagName" placeholder="Tag Name" style="width: 100%" />
 						<div slot="footer">
@@ -90,41 +90,6 @@
 		</div>
 	</div>
 </template>
-<style scoped>
-.lds-ripple {
-	display: inline-block;
-	position: relative;
-	width: 80px;
-	height: 80px;
-	}
-	.lds-ripple div {
-	position: absolute;
-	border: 4px solid #bfbfbf;
-	opacity: 1;
-	margin: 27vh 77vh;
-	border-radius: 50%;
-	animation: lds-ripple 1s cubic-bezier(0, 0.2, 0.8, 1) infinite;
-	}
-	.lds-ripple div:nth-child(2) {
-	animation-delay: -0.5s;
-	}
-	@keyframes lds-ripple {
-	0% {
-		top: 36px;
-		left: 36px;
-		width: 0;
-		height: 0;
-		opacity: 1;
-	}
-	100% {
-		top: 0px;
-		left: 0px;
-		width: 72px;
-		height: 72px;
-		opacity: 0;
-	}
-	}
-</style>
 <script>
 import deleteModal from '../components/deletemodal';
 import { mapGetters } from 'vuex';
@@ -197,7 +162,7 @@ export default {
 				this.btnloadingOff();
 				this.s('Tag has been added successfully!');
 				this.closeAddModal();
-				this.clearAddTextField();
+				this.clearAddModalTextField();
 			} else if(res.status===422) {
 				for(let i in res.data.errors) this.e(res.data.errors[i])
 				this.btnloadingOff();
@@ -220,17 +185,14 @@ export default {
 				this.btnloadingOff();
 				this.s('Tag has been edited successfully!');
 				this.closeEditModal();
-				this.clearEditTextField();
-			} else {
-				if(res.status===422){
-					if(res.data.errors.tagName){
-						this.i(res.data.errors.tagName[0]);
-					}
-				} else {
+				this.clearEditModalTextField();
+			} else if(res.status===422) {
+				for(let i in res.data.errors) this.e(res.data.errors[i])
 				this.btnloadingOff();
-				this.e();
-				}
-			}
+			} else {
+				this.btnloadingOff();
+                this.e();
+            }
 		},
 		// delete Tag
 		// async deleteTag(){
@@ -279,10 +241,10 @@ export default {
 		btnloadingOff(){
 			this.isAdding=false;
 		},
-		clearAddTextField(){
+		clearAddModalTextField(){
 			this.data.tagName='';
 		},
-		clearEditTextField(){
+		clearEditModalTextField(){
 			this.editData.tagName='';
 		},
 		openEditModal(tag, index){	
@@ -321,6 +283,17 @@ export default {
 		// },
 		
 	},
+	cancel(){
+			if(this.addModal==true){
+				this.clearAddModalTextField();
+				this.closeAddModal();
+			} else if (this.editModal==true){
+				this.clearEditModalTextField();
+				this.closeEditModal();
+			} else {
+
+			}
+    },
 }
 </script>
 

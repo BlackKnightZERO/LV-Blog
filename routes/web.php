@@ -40,6 +40,8 @@ Route::prefix('admin')->namespace('Admin')->group(function () {
     //users
     Route::get('/users/get_users','UserController@get');
     Route::post('/users/create_user','UserController@add');
+    Route::post('/user/update_user','UserController@update');
+    Route::post('/user/delete_user','UserController@delete');
     
 });
 
