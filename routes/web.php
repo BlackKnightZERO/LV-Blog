@@ -51,18 +51,17 @@ Route::prefix('admin')->namespace('Admin')->group(function () {
     
 });
 
-
-
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', 'CustomController@index');
+Route::get('{slug}', 'CustomController@index');
 
 
 
-
+// Route::get('/', function () {
+//     return view('welcome');
+// });
 //unmatced-route
-Route::any('{slug}',function(){
-	return view('welcome');
-});
+// Route::any('{slug}',function(){
+// 	return view('welcome');
+// });
 
 

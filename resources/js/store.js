@@ -16,7 +16,8 @@ export default new Vuex.Store({
             deleteData:{
 
             },
-        }
+        },
+        user:false,
     },
 
     getters:{
@@ -26,10 +27,12 @@ export default new Vuex.Store({
         getCounterRatio(state){
             return state.counter / 100;
         },
-
         getDeleteModalObj(state){
             return state.deleteModalObj;
-        }
+        },
+        // getLoggedInUser(state){
+        //     return state.deleteModalObj;
+        // },
     },
 
     /// mutations are *** not asynchronous
@@ -66,6 +69,9 @@ export default new Vuex.Store({
         
         setDeleteModalObj(state, data){
             state.deleteModalObj = data;
+        },
+        loggedInUser(state, data){
+            state.user = data;
         }
     },
     /// actions asynchronous *** can be used for api calling

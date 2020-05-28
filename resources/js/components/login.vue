@@ -36,9 +36,10 @@
         text-align: center;
         width: 35%;
         border-radius: 1%;
+        box-shadow: 0px 5px 4px grey;
     }
     .login_header{
-        margin: 3%;
+        margin: 4%;
     }
     .login_footer{
         margin-top:3%;
@@ -65,6 +66,7 @@ export default {
             const res = await this.callApi('post', '/user/login/attempt', this.data);
             if(res.status===200){
                 this.s(res.data.msg, 'Welcome');
+                window.location = '/dashboard';
             } else if(res.status===422) {
                 for(let i in res.data.errors) this.e(res.data.errors[i])
             } else if(res.status===401) {

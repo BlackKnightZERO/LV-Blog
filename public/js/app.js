@@ -3635,6 +3635,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 //
 //
 //
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
@@ -3689,6 +3690,8 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
                 if (res.status === 200) {
                   _this.s(res.data.msg, 'Welcome');
+
+                  window.location = '/dashboard';
                 } else if (res.status === 422) {
                   for (i in res.data.errors) {
                     _this.e(res.data.errors[i]);
@@ -3794,11 +3797,19 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
+  props: ['user'],
   data: function data() {
-    return {
-      isLoggedIn: false
+    return {//isLoggedIn : false,
     };
+  },
+  created: function created() {
+    this.$store.commit('loggedInUser', this.user); //console.log(this.user);
   }
 });
 
@@ -4187,7 +4198,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "\n.spacer[data-v-172b28a4]{\n    margin : 5px 5px;\n}\n.login_wrapper[data-v-172b28a4]{\n    margin: 0 21%;\n    margin-top: 10%;\n    background: #ffffff;\n    padding: 15px;\n    line-height: 35px;\n    text-align: center;\n    width: 35%;\n    border-radius: 1%;\n}\n.login_header[data-v-172b28a4]{\n    margin: 3%;\n}\n.login_footer[data-v-172b28a4]{\n    margin-top:3%;\n}\n", ""]);
+exports.push([module.i, "\n.spacer[data-v-172b28a4]{\n    margin : 5px 5px;\n}\n.login_wrapper[data-v-172b28a4]{\n    margin: 0 21%;\n    margin-top: 10%;\n    background: #ffffff;\n    padding: 15px;\n    line-height: 35px;\n    text-align: center;\n    width: 35%;\n    border-radius: 1%;\n    box-shadow: 0px 5px 4px grey;\n}\n.login_header[data-v-172b28a4]{\n    margin: 4%;\n}\n.login_footer[data-v-172b28a4]{\n    margin-top:3%;\n}\n", ""]);
 
 // exports
 
@@ -70686,7 +70697,7 @@ var render = function() {
   return _c(
     "div",
     [
-      _vm.isLoggedIn
+      _vm.$store.state.user
         ? _c("div", [
             _c("div", { staticClass: "_1side_menu" }, [
               _vm._m(0),
@@ -70758,7 +70769,19 @@ var render = function() {
                         )
                       ],
                       1
-                    )
+                    ),
+                    _vm._v(" "),
+                    _c("li", { staticStyle: { background: "#FFD1C8" } }, [
+                      _c(
+                        "a",
+                        { attrs: { href: "/user/logout" } },
+                        [
+                          _c("Icon", { attrs: { type: "md-power" } }),
+                          _vm._v(" Logout\n              ")
+                        ],
+                        1
+                      )
+                    ])
                   ])
                 ])
               ])
@@ -88362,7 +88385,8 @@ vue__WEBPACK_IMPORTED_MODULE_0___default.a.use(vuex__WEBPACK_IMPORTED_MODULE_1__
       deleteIndex: -1,
       isDeleted: false,
       deleteData: {}
-    }
+    },
+    user: false
   },
   getters: {
     getCounter: function getCounter(state) {
@@ -88373,7 +88397,10 @@ vue__WEBPACK_IMPORTED_MODULE_0___default.a.use(vuex__WEBPACK_IMPORTED_MODULE_1__
     },
     getDeleteModalObj: function getDeleteModalObj(state) {
       return state.deleteModalObj;
-    }
+    } // getLoggedInUser(state){
+    //     return state.deleteModalObj;
+    // },
+
   },
   /// mutations are *** not asynchronous
   mutations: {
@@ -88407,6 +88434,9 @@ vue__WEBPACK_IMPORTED_MODULE_0___default.a.use(vuex__WEBPACK_IMPORTED_MODULE_1__
     // },
     setDeleteModalObj: function setDeleteModalObj(state, data) {
       state.deleteModalObj = data;
+    },
+    loggedInUser: function loggedInUser(state, data) {
+      state.user = data;
     }
   },
   /// actions asynchronous *** can be used for api calling
