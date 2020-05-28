@@ -10,11 +10,20 @@ class CustomController extends Controller
 {
     public function index(Request $request){
         //return serialize(Auth::check());
-        if(!Auth::check() && $request->path() != 'login'){
-            return redirect('/login');
-        }
-        if(!Auth::check() && $request->path() == 'login'){
-            return view('welcome');
+        // if(!Auth::check() && $request->path() != 'login'){
+        //     return redirect('/login');
+        // }
+        // if(!Auth::check() && $request->path() == 'login'){
+        //     return view('welcome');
+        // }
+        if(!Auth::check()){
+            if($request->path() != 'login'){
+                return redirect('/login');
+            } else if ($request->path() == 'login'){
+                return view('welcome');
+            } else {
+
+            }
         }
         $user = Auth::user();
         if($user->userType=='User'){

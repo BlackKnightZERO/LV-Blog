@@ -41,7 +41,7 @@
 					<div class="lds-ripple"><div></div><div></div></div>
 				</div>
 				 <!-- <Page :total="100" /> -->
-				 <!-- tag adding midal -->
+				 <!-- tag adding modal -->
 				  	<Modal
 						v-model="addModal"
 						title="Add a Tag"
@@ -55,8 +55,8 @@
 						</div>
 
 					</Modal>	
-				 <!-- tag adding midal -->	
-				  <!-- tag edit midal -->
+				 <!-- tag adding modal -->	
+				  <!-- tag edit modal -->
 				  	<Modal
 						v-model="editModal"
 						title="Edit Tag"
@@ -70,7 +70,7 @@
 						</div>
 
 					</Modal>	
-				 <!-- tag edit midal -->	
+				 <!-- tag edit modal -->	
 				 <!-- delete modal -->
 					<!-- <Modal v-model="deleteModal" width="360">
 						<p slot="header" style="color:#f60;text-align:center">
@@ -152,10 +152,10 @@ export default {
 		//add Tag
 		async addTag(){
 			this.btnloading();
-			// if(this.data.tagName.trim()==''){
-			// 	this.btnloadingOff();
-			// 	return this.e('Tagname is required!');
-			// } 
+			if(this.data.tagName.trim()==''){
+				this.btnloadingOff();
+				return this.e('Tagname is required!');
+			} 
 			const res = await this.callApi('post','/admin/tag/create_tag',this.data);
 			if(res.status===201){
 				this.tags.unshift(res.data); //adds response to the begining of tags array

@@ -38,6 +38,11 @@
                   <Icon type="ios-people" /> Users
                 </router-link>  
               </li>
+              <li>
+                <router-link to="/role">
+                  <Icon type="ios-bookmark" /> Roles
+                </router-link>  
+              </li>
               <li style="background:#FFD1C8;">
                 <a href="/user/logout">
                   <Icon type="md-power" /> Logout

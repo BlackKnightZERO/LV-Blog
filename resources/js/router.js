@@ -16,6 +16,7 @@ import dashboard from './admin/pages/dashboard'
 import tags from './admin/pages/tags'
 import category from './admin/pages/category'
 import users from './admin/pages/users'
+import role from './admin/pages/role'
 
 Vue.use(Router)
 
@@ -40,6 +41,10 @@ const routes = [
 	{
 		path: '/users',
       	component: users,
+	},
+	{
+		path: '/role',
+      	component: role,
 	},
 	
 

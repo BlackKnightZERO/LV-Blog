@@ -28,7 +28,7 @@ Route::prefix('user')->group(function () {
 });
 
 //ADMIN ROUTES
-Route::prefix('admin')->namespace('Admin')->group(function () {
+Route::prefix('admin')->namespace('Admin')->middleware('AdminCheck')->group(function () {
     //tags
     Route::get('/tag/get_tags', 'TagController@get');
     Route::post('/tag/create_tag', 'TagController@add');
