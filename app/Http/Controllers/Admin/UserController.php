@@ -11,7 +11,11 @@ class UserController extends Controller
     //
     public function get(){
         // return User::OrderBy('id','desc')->get();
-        return User::where('userType', '!=', 'User')->latest()->get();
+        // return User::where('userType', '!=', 'User')->latest()->get();
+        return User::with('role')->latest()->get();
+        // return User::with(['role' => function($q){
+        //     $q->where('isPermitted','!=', '0');
+        // }])->latest()->get();
     }
 
     public function add(Request $request){
@@ -19,7 +23,7 @@ class UserController extends Controller
             'fullName' => 'required',
             'email' => 'required|email|unique:users',
             'password' => 'required|min:6',
-            'userType' => 'required',
+            'role_id' => 'required',
         ]);
         $hashedPassword = bcrypt($request->password);
         //$type = '';
@@ -30,12 +34,15 @@ class UserController extends Controller
         // } else {
         //     $type = 'Unknown';
         // }
-        return User::create([
+        $newUser = User::create([
             'fullName' => $request->fullName,
             'email' => $request->email,
             'password' => $hashedPassword,
-            'userType' => $request->userType,
+            'role_id' => $request->role_id,
         ]);
+        if($newUser){
+            return User::with('role')->latest()->first();
+        } 
     }
 
     public function update(Request $request){

@@ -13,7 +13,7 @@
 								<th>Sl</th>
 								<th>FullName</th>
 								<th>E-Mail</th>
-								<th>Type</th>
+								<th>Role</th>
 								<th>Created At</th>
 								<th>Action</th>
 							</tr>
@@ -21,7 +21,11 @@
 								<td>{{ index+1 }}</td>
 								<td class="_table_name">{{ user.fullName }}</td>
                                 <td>{{ user.email }}</td>
-                                <td>{{ user.userType }}</td>
+                                <td>
+									<Badge status="success" v-if="user.role.isPermitted==1" />
+									<Badge status="error" v-else />
+									{{ user.role.roleName }}
+								</td>
 								<td>{{ user.created_at }}</td>
 								<td>
 									<Button type="info" size="small" @click="openEditModal(user, index)">Edit</Button>
@@ -54,9 +58,10 @@
                              <Layout style="background:#ffffff!important;">
                                  <Content style="margin: auto 16px;text-align: right;"></Content>
                                     <Sider hide-trigger>
-                                        <Select prefix="md-paper-plane" v-model="data.userType"  placeholder="User type">
-                                            <Option value="Editor">Editor</Option>
-                                            <Option value="Admin">Admin</Option>
+                                        <Select prefix="md-paper-plane" v-model="data.role_id"  placeholder="User type">
+                                            <!-- <Option value="Editor">Editor</Option>
+                                            <Option value="Admin">Admin</Option> -->
+											<Option :value="r.id" v-for="(r,i) in roles" :key="i">{{ r.roleName }}</Option>
                                         </Select>
                                     </Sider>
                              </Layout>
@@ -136,9 +141,10 @@ export default {
 				fullName:'',
 				email :'',
 				password :'',
-				userType :'',
+				role_id:null,
             },
-            users:[],
+			users:[],
+			roles:[],
 			addModal: false,
 			editModal: false,
 			isAdding: false,
@@ -146,7 +152,7 @@ export default {
 				fullName:'',
 				email :'',
 				password :'',
-				userType :'',
+				role_id:null,
 			},
             editIndex:-1,
             
@@ -168,15 +174,24 @@ export default {
 	},
 
 	async created(){
-		const res = await this.callApi('get','/admin/users/get_users');
-		
+		const [res,resRole] = await Promise.all([
+			this.callApi('get','/admin/users/get_users'),
+			this.callApi('get','/admin/role/get_roles')
+		]);
+		console.log(res);
+		// const res = await this.callApi('get','/admin/users/get_users');
+		// const resRole = await this.callApi('get','/admin/role/get_roles');
 		if(res.status==200){
-            this.loadingSpinner=false
 			this.users = res.data
 		} else {
-            this.loadingSpinner=false
 			this.e();
 		}
+		if(resRole.status==200){
+			this.roles = resRole.data
+		} else {
+			this.e();
+		}
+		this.loadingSpinner=false
 	},
 
 	methods:{
@@ -196,15 +211,15 @@ export default {
 				this.btnloadingOff();
 				return this.e('Password is required!');
             } 
-            if(this.data.userType.trim()==''){
+            if(!this.data.role_id){
 				this.btnloadingOff();
 				return this.e('Type is required!');
 			} 
 			const res = await this.callApi('post','/admin/users/create_user',this.data);
-			if(res.status===201){
+			if(res.status===200){
 				this.users.unshift(res.data);
 				this.btnloadingOff();
-				this.s('Tag has been added successfully!');
+				this.s('User has been added successfully!');
 				this.closeAddModal();
 				this.clearAddModalTextField();
 			} else if(res.status===422) {
@@ -226,7 +241,7 @@ export default {
 				this.btnloadingOff();
 				return this.e('E-Mail is required!');
             } 
-            if(this.editData.userType.trim()==''){
+            if(!this.editData.role_id){
 				this.btnloadingOff();
 				return this.e('Type is required!');
 			} 
@@ -235,7 +250,7 @@ export default {
 				this.users[this.editIndex].fullName = this.editData.fullName;
 				this.users[this.editIndex].email = this.editData.email;
 				this.users[this.editIndex].password = this.editData.password;
-				this.users[this.editIndex].userType = this.editData.userType;
+				this.users[this.editIndex].role_id = this.editData.role_id;
 
 				this.btnloadingOff();
 				this.s('User has been edited successfully!');
@@ -266,14 +281,14 @@ export default {
 			fullName =''
 			email = ''
 			password = ''
-			userType = ''
+			role_id = null
 		},
 		clearEditModalTextField(){
 			this.editData.id = '';
 			this.editData.fullName = '';
 			this.editData.email = '';
 			this.editData.password = '';
-			this.editData.userType = '';
+			this.editData.role_id = null;
 			this.editIndex = -1;
 		},
 		openEditModal(user, index){	
@@ -281,7 +296,7 @@ export default {
 			this.editData.fullName = user.fullName;
 			this.editData.email = user.email;
 			this.editData.password = user.password;
-			this.editData.userType = user.userType;
+			this.editData.role_id = user.role_id;
 			this.editIndex = index;
 			this.editModal = true;
 		},
@@ -290,7 +305,7 @@ export default {
 			this.editData.fullName = '';
 			this.editData.email = '';
 			this.editData.password = '';
-			this.editData.userType = '';
+			this.editData.role_id = null;
 			this.editIndex = -1;
 			this.editModal = false;
 		},

@@ -12,14 +12,18 @@
 							<tr>
 								<th>ID</th>
 								<th>Role</th>
-								<th>Permissions</th>
+								<!-- <th>Permissions</th> -->
 								<th>Created At</th>
 								<th>Action</th>
 							</tr>							
 							<tr v-for="(role, index) in roles" :key="index">
 								<td>{{ index+1 }}</td>
-								<td class="_table_name">{{ role.roleName }}</td>
-                                <td></td>
+								<td class="_table_name">
+									<Badge status="success" v-if="role.isPermitted==1" />
+									<Badge status="error" v-else />
+									{{ role.roleName }}
+								</td>
+                                <!-- <td>{{ role.permission }}</td> -->
 								<td>{{ role.created_at }}</td>
 								<td>
 									<Button type="info" size="small" @click="openEditModal(role, index)">Edit</Button>
@@ -43,8 +47,8 @@
                         <div class="spacer2">
 						    <Input prefix="ios-body" clearable v-model="data.roleName" placeholder="Role Name" style="width: 100%" />
                         </div>
-                        <br>
-                        <div class="spacer2">
+                         <br>
+                        <!--<div class="spacer2">
                             <CheckboxGroup>
                                 <span class="mr-10">Permissions</span>
                                 <Checkbox label="Add" v-model="data.permissionAdd">
@@ -64,11 +68,11 @@
                                     <span>Delete</span>
                                 </Checkbox>  
                             </CheckboxGroup>  
-                        </div>
+                        </div> -->
                         <div class="spacer2">
                             <span class="mr-10">Access Control</span>
-                            <i-switch v-model="data.accessSwitch" @on-change="!accessSwitch" true-color="#13ce66" false-color="#ff4949" />
-                        </div>    
+                            <i-switch v-model="data.isPermitted" @on-change="!data.isPermitted" true-color="#13ce66" false-color="#ff4949" />
+                        </div>     
                     	<div slot="footer">
 							<Button type="default" @click="closeAddModal">close</Button>
 							<Button type="primary" @click="add" :disabled="isAdding" :loading="isAdding">{{ isAdding ? 'Adding..' : 'Add'}}</Button>
@@ -83,7 +87,13 @@
 						:mask-closable="false"
 						:closable="true"
 						>
-						<Input prefix="ios-link" clearable v-model="editData.roleName" placeholder="Tag Name" style="width: 100%" />
+						<div class="spacer2">
+							<Input prefix="ios-link" clearable v-model="editData.roleName" placeholder="Role Name" style="width: 100%" />
+						</div>
+						<br>
+						<div class="spacer2">
+						 	<i-switch v-model="editData.isPermitted" @on-change="!editData.isPermitted" true-color="#13ce66" false-color="#ff4949" />
+						</div>
 						<div slot="footer">
 							<Button type="default" @click="closeEditModal">close</Button>
 							<Button type="primary" @click="update" :disabled="isAdding" :loading="isAdding">{{ isAdding ? 'Updating..' : 'Update'}}</Button>
@@ -116,11 +126,11 @@ export default {
 		return{
 			data: {
                 roleName:'',
-                accessSwitch: false,
-                permissionAdd: false,
-                permissionView: false,
-                permissionEdit: false,
-                permissionDelete: false,
+                isPermitted: false,
+                // permissionAdd: false,
+                // permissionView: false,
+                // permissionEdit: false,
+                // permissionDelete: false,
 			},
 			addModal: false,
 			editModal: false,
@@ -129,12 +139,10 @@ export default {
 			editData: {
 				id:'',
 				roleName:'',
+				isPermitted:null,
 			},
 			editIndex:-1,
-
-            loadingSpinner: true,
-            
-            
+            loadingSpinner: true, 
 		}	
 	},
 
@@ -150,11 +158,13 @@ export default {
 	},
 
 	async created(){
-		const res = await this.callApi('get','/admin/tag/get_tags');
-		
+		const res = await this.callApi('get','/admin/role/get_roles');
+		// console.log(JSON.parse(res.data[0].permission));
+
 		if(res.status==200){
 			this.loadingSpinner=false
 			this.roles = res.data
+			// this.roles.permission = JSON.parse(res.data.permission)
 		} else {
 			this.loadingSpinner=false
 			this.e();
@@ -170,7 +180,7 @@ export default {
 				this.btnloadingOff();
 				return this.e('RoleName is required!');
 			} 
-			const res = await this.callApi('post','/admin/tag/create_tag',this.data);
+			const res = await this.callApi('post','/admin/role/create_role',this.data);
 			if(res.status===201){
 				this.roles.unshift(res.data);
 				this.btnloadingOff();
@@ -188,25 +198,26 @@ export default {
 		},
 		//update
 		async update(){
-			// this.btnloading();
-			// if(this.editData.tagName.trim()==''){
-			// 	this.btnloadingOff();
-			// 	return this.e('Tagname is required!');
-			// } 
-			// const res = await this.callApi('post','/admin/tag/update_tag',this.editData);
-			// if(res.status===200){
-			// 	this.tags[this.editIndex].tagName = this.editData.tagName;
-			// 	this.btnloadingOff();
-			// 	this.s('Tag has been edited successfully!');
-			// 	this.closeEditModal();
-			// 	this.clearEditModalTextField();
-			// } else if(res.status===422) {
-			// 	for(let i in res.data.errors) this.e(res.data.errors[i])
-			// 	this.btnloadingOff();
-			// } else {
-			// 	this.btnloadingOff();
-            //     this.e();
-            // }
+			this.btnloading();
+			if(this.editData.roleName.trim()==''){
+				this.btnloadingOff();
+				return this.e('Role Name is required!');
+			} 
+			const res = await this.callApi('post','/admin/role/update_role',this.editData);
+			if(res.status===200){
+				this.roles[this.editIndex].roleName = this.editData.roleName;
+				this.roles[this.editIndex].isPermitted = this.editData.isPermitted;
+				this.btnloadingOff();
+				this.s('Role has been edited successfully!');
+				this.closeEditModal();
+				this.clearEditModalTextField();
+			} else if(res.status===422) {
+				for(let i in res.data.errors) this.e(res.data.errors[i])
+				this.btnloadingOff();
+			} else {
+				this.btnloadingOff();
+                this.e();
+            }
 		},
 
 		//others
@@ -223,27 +234,31 @@ export default {
 			this.isAdding=false;
 		},
 		clearAddModalTextField(){
-			this.data.roleName='';
+			this.data.roleName=''
+			this.data.isPermitted=false
 		},
 		clearEditModalTextField(){
-			this.editData.roleName='';
+			this.editData.roleName=''
+			this.editData.isPermitted=null
 		},
 		openEditModal(role, index){	
-			this.editModal=true;
 			this.editData.id = role.id;
 			this.editData.roleName = role.roleName;
+			this.editData.isPermitted = (role.isPermitted==1) ? true : false;
 			this.editIndex = index;
+			this.editModal=true;
 		},
 		closeEditModal(){
 			this.editData.id = '';
 			this.editData.roleName = '';
+			this.editData.isPermitted=null
 			this.editModal = false;
 			this.editIndex = -1;
 		},
 		openDeleteModal(role, index){
 			const deleteModalObj = {
 									showDeleteModal:true,
-									deleteUrl:'/admin/tag/delete_tag',
+									deleteUrl:'/admin/role/delete_role',
 									deleteIndex:index,
 									isDeleted:false,
 									deleteData:role,

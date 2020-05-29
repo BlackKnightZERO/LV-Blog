@@ -3101,7 +3101,8 @@ i.cross_icon{
 	position: absolute;
 	border: 4px solid #bfbfbf;
 	opacity: 1;
-	margin: 27vh 77vh;
+  margin: 27vh 68vh;
+  
 	border-radius: 50%;
 	animation: lds-ripple 1s cubic-bezier(0, 0.2, 0.8, 1) infinite;
 	}

@@ -48,6 +48,15 @@ Route::prefix('admin')->namespace('Admin')->middleware('AdminCheck')->group(func
     Route::post('/users/create_user','UserController@add');
     Route::post('/user/update_user','UserController@update');
     Route::post('/user/delete_user','UserController@delete');
+
+    //roles
+    Route::get('/role/get_roles', 'RoleController@get');
+    Route::post('/role/create_role', 'RoleController@add');
+    Route::post('/role/update_role', 'RoleController@update');
+    Route::post('/role/delete_role', 'RoleController@delete');
+
+    //permissions
+    Route::post('/permission/update_permission','PermissionController@update');
     
 });
 

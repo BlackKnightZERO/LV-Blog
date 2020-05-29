@@ -26,7 +26,7 @@ class CustomController extends Controller
             }
         }
         $user = Auth::user();
-        if($user->userType=='User'){
+        if($user->role->isPermitted == 0){
             $this->logout();
         }
         if(Auth::check() && $request->path() == 'login'){
@@ -46,7 +46,7 @@ class CustomController extends Controller
         ];
         if(Auth::attempt($loginCredentials)){
                 $user = Auth::user();
-                if($user->userType == 'User'){
+                if($user->role->isPermitted == 0){
                     Auth::logout();
                     return response()->json([
                         'msg' => 'Permission Denied'

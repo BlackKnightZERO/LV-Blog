@@ -43,6 +43,11 @@
                   <Icon type="ios-bookmark" /> Roles
                 </router-link>  
               </li>
+              <li>
+                <router-link to="/permission">
+                  <Icon type="ios-switch" /> Permission
+                </router-link>  
+              </li>
               <li style="background:#FFD1C8;">
                 <a href="/user/logout">
                   <Icon type="md-power" /> Logout

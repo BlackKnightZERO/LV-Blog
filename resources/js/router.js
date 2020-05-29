@@ -17,6 +17,7 @@ import tags from './admin/pages/tags'
 import category from './admin/pages/category'
 import users from './admin/pages/users'
 import role from './admin/pages/role'
+import permission from './admin/pages/permission'
 
 Vue.use(Router)
 
@@ -24,27 +25,38 @@ const routes = [
 	//project routes
 	{
 		path: '/login',
-      	component: login,
+		  component: login,
+		  name:'login'
 	},
 	{
 		path: '/dashboard',
-      	component: dashboard,
+		  component: dashboard,
+		  name:'dashboard'
 	},
 	{
 		path: '/tags',
-      	component: tags,
+		  component: tags,
+		  name:'tags'
 	},
 	{
 		path: '/category',
-      	component: category,
+		  component: category,
+		  name:'category'
 	},
 	{
 		path: '/users',
-      	component: users,
+		  component: users,
+		  name:'users'
 	},
 	{
 		path: '/role',
-      	component: role,
+		  component: role,
+		  name:'role'
+	},
+	{
+		path: '/permission',
+		  component: permission,
+		  name:'permission'
 	},
 	
 
