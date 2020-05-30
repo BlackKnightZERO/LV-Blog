@@ -73,6 +73,7 @@ export default {
                 this.e(res.data.msg, 'Login Failed');
             } else {
                 this.e();
+                //console.log(res);
             }
             this.btnLoadingOff();
         },

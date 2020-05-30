@@ -35,6 +35,25 @@ class CustomController extends Controller
         return view('welcome');
         //return $request->path();
     }
+    // return $this->checkPagePermission($user, $request);
+    // }
+
+    // public function checkPagePermission($user, $request){
+    //     $permissions = json_decode($user->role->permission);
+    //     $hasPermission = false;
+    //     foreach($permissions as $p){
+    //         if($p->name==$request->path()){
+    //             if($p->view){
+    //                 $hasPermission = true;
+    //             }
+    //         }
+    //     }
+    //     // echo $hasPermission;
+    //     // exit();
+    //     if($hasPermission) return view('welcome');
+    //     return abort(404);
+    // }
+    
     public function login(Request $request){
         $vd = $this->validate($request,[
             'email' => 'required|email',

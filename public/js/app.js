@@ -2796,6 +2796,10 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 //
 //
 //
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
@@ -2807,6 +2811,49 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       loadingSpinner: true,
       roles: [],
       resources: [{
+        resourceName: 'Dashboard',
+        add: false,
+        edit: false,
+        "delete": false,
+        view: false,
+        name: 'dashboard'
+      }, {
+        resourceName: 'Tags',
+        add: false,
+        edit: false,
+        "delete": false,
+        view: false,
+        name: 'tags'
+      }, {
+        resourceName: 'Category',
+        add: false,
+        edit: false,
+        "delete": false,
+        view: false,
+        name: 'category'
+      }, {
+        resourceName: 'Users',
+        add: false,
+        edit: false,
+        "delete": false,
+        view: false,
+        name: 'users'
+      }, {
+        resourceName: 'Role',
+        add: false,
+        edit: false,
+        "delete": false,
+        view: false,
+        name: 'role'
+      }, {
+        resourceName: 'Permission',
+        add: false,
+        edit: false,
+        "delete": false,
+        view: false,
+        name: 'permission'
+      }],
+      resourcesReset: [{
         resourceName: 'Dashboard',
         add: false,
         edit: false,
@@ -2867,8 +2914,8 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
               res = _context.sent;
 
               if (res.status == 200) {
-                console.log(res);
-                _this.resources = JSON.parse(res.data[3].permission);
+                //console.log(res);
+                _this.resources = JSON.parse(res.data[1].permission);
                 _this.loadingSpinner = false;
                 _this.roles = res.data;
               } else {
@@ -2891,7 +2938,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       var _this2 = this;
 
       return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee2() {
-        var permission, res, i;
+        var permission, res, index, i;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee2$(_context2) {
           while (1) {
             switch (_context2.prev = _context2.next) {
@@ -2905,7 +2952,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
                 _this2.btnloadingOff();
 
-                return _context2.abrupt("return", _this2.e('Role Selection Required'));
+                return _context2.abrupt("return", _this2.i('Role Selection Required'));
 
               case 4:
                 permission = JSON.stringify(_this2.resources);
@@ -2919,10 +2966,14 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 res = _context2.sent;
 
                 if (res.status === 200) {
-                  // this.resources = JSON.parse(res.data.permission);
-                  _this2.btnloadingOff();
-
                   _this2.s('Permission Updated Successfully!');
+
+                  index = _this2.roles.findIndex(function (role) {
+                    return role.id == _this2.data.id;
+                  });
+                  _this2.roles[index].permission = permission;
+
+                  _this2.btnloadingOff();
                 } else if (res.status === 422) {
                   for (i in res.data.errors) {
                     _this2.e(res.data.errors[i]);
@@ -2942,6 +2993,20 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
           }
         }, _callee2);
       }))();
+    },
+    selectRole: function selectRole() {
+      var _this3 = this;
+
+      var index = this.roles.findIndex(function (role) {
+        return role.id == _this3.data.id;
+      });
+      var permission = this.roles[index].permission;
+
+      if (!permission) {
+        this.resources = this.resourcesReset;
+      } else {
+        this.resources = JSON.parse(permission);
+      }
     },
     //others
     btnloading: function btnloading() {
@@ -4367,7 +4432,8 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 } else if (res.status === 401) {
                   _this.e(res.data.msg, 'Login Failed');
                 } else {
-                  _this.e();
+                  _this.e(); //console.log(res);
+
                 }
 
                 _this.btnLoadingOff();
@@ -70615,6 +70681,7 @@ var render = function() {
                           prefix: "md-paper-plane",
                           placeholder: "User type"
                         },
+                        on: { "on-change": _vm.selectRole },
                         model: {
                           value: _vm.data.id,
                           callback: function($$v) {
@@ -70627,7 +70694,17 @@ var render = function() {
                         return _c(
                           "Option",
                           { key: i, attrs: { value: r.id } },
-                          [_vm._v(_vm._s(r.roleName))]
+                          [
+                            r.isPermitted == 1
+                              ? _c("Badge", { attrs: { status: "success" } })
+                              : _c("Badge", { attrs: { status: "error" } }),
+                            _vm._v(
+                              "\n\t\t\t\t\t\t\t\t" +
+                                _vm._s(r.roleName) +
+                                "\n\t\t\t\t\t\t\t"
+                            )
+                          ],
+                          1
                         )
                       }),
                       1

@@ -6,8 +6,12 @@
 				<!--~~~~~~~ TABLE ONE ~~~~~~~~~-->
 				<div class="_1adminOverveiw_table_recent _box_shadow _border_radious _mar_b30 _p20" v-if="!loadingSpinner">
 					<p class="_title0">Roles 
-                        <Select prefix="md-paper-plane" v-model="data.id"  placeholder="User type" style="width:300px; margin-left:5px;">
-                            <Option :value="r.id" v-for="(r,i) in roles" :key="i">{{ r.roleName }}</Option>
+                        <Select prefix="md-paper-plane" v-model="data.id"  placeholder="User type" style="width:300px; margin-left:5px;" @on-change="selectRole">
+                            <Option :value="r.id" v-for="(r,i) in roles" :key="i">
+								<Badge status="success" v-if="r.isPermitted==1" />
+								<Badge status="error" v-else />
+								{{ r.roleName }}
+							</Option>
                         </Select>
                     </p>
 
@@ -82,51 +86,68 @@ export default {
                 {resourceName:'Role',add:false,edit:false,delete:false,view:false, name:'role'},
                 {resourceName:'Permission',add:false,edit:false,delete:false,view:false, name:'permission'},
                 ],
+            resourcesReset:[
+                {resourceName:'Dashboard',add:false,edit:false,delete:false,view:false, name:'dashboard'},
+                {resourceName:'Tags',add:false,edit:false,delete:false,view:false, name:'tags'},
+                {resourceName:'Category',add:false,edit:false,delete:false,view:false, name:'category'},
+                {resourceName:'Users',add:false,edit:false,delete:false,view:false, name:'users'},
+                {resourceName:'Role',add:false,edit:false,delete:false,view:false, name:'role'},
+                {resourceName:'Permission',add:false,edit:false,delete:false,view:false, name:'permission'},
+                ],
 		}	
 	},
 	async created(){
 		const res = await this.callApi('get','/admin/role/get_roles');
 		if(res.status==200){
-            console.log(res);
-            this.resources = JSON.parse(res.data[3].permission);
+            //console.log(res);
+            this.resources = JSON.parse(res.data[1].permission);
 			this.loadingSpinner=false
 			this.roles = res.data
 		} else {
 			this.loadingSpinner=false
-			this.e();
+			this.e()
 		}
 	},
 
 	methods:{
 		//update
 		async update(){
-			this.btnloading();
+			this.btnloading()
 			if(!this.data.id){
-				this.btnloadingOff();
-				return this.e('Role Selection Required');
+				this.btnloadingOff()
+				return this.i('Role Selection Required')
             } 
-            let permission = JSON.stringify(this.resources);
+            let permission = JSON.stringify(this.resources)
 			const res = await this.callApi('post','/admin/permission/update_permission',{id:this.data.id,permission:permission});
 			if(res.status===200){
-                
-				// this.resources = JSON.parse(res.data.permission);
-				this.btnloadingOff();
 				this.s('Permission Updated Successfully!');
+				let index = this.roles.findIndex(role =>role.id == this.data.id);
+				this.roles[index].permission = permission
+				this.btnloadingOff()
 			} else if(res.status===422) {
 				for(let i in res.data.errors) this.e(res.data.errors[i])
-				this.btnloadingOff();
+				this.btnloadingOff()
 			} else {
-				this.btnloadingOff();
-                this.e();
+				this.btnloadingOff()
+                this.e()
             }
+		},
+		selectRole(){
+			let index = this.roles.findIndex(role =>role.id == this.data.id);
+			let permission = this.roles[index].permission
+			if(!permission){
+				this.resources = this.resourcesReset
+			} else {
+				this.resources = JSON.parse(permission)
+			}
 		},
 
 		//others
 		btnloading(){
-			this.isAdding=true;
+			this.isAdding=true
 		},
 		btnloadingOff(){
-			this.isAdding=false;
+			this.isAdding=false
         },
     }
 }
